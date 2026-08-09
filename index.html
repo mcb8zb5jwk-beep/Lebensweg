@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Lebensweg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F2E7; --ink:#241F38; --sub:#8B8299; --card:#FFFFFF; --surface:#FFFFFF;
+    --tan:#F4EEDD; --tan-strong:#DED4BC; --tan-border:#EAE2D0;
+    --pink:#FF6F91; --pink-dark:#DE3F68; --green:#37B863; --red:#FF5A5F; --red-soft:#FFE3E3;
+    --blue:#4AA8FF; --blue-soft:#E4F1FF; --purple:#8E5CFF; --purple-soft:#EFE6FF;
+    --gold:#FFB800; --gold-soft:#FFF2CE; --green-soft:#E1F7E9;
+    --border: 2.5px solid var(--ink); --shadow: 3px 4px 0 rgba(36,31,56,0.18);
+  }
+  body.dark{
+    --bg:#151223; --ink:#F1ECFF; --sub:#A79DC7; --card:#211C36; --surface:#241E3B;
+    --tan:#2C2545; --tan-strong:#3A3156; --tan-border:#332C4D;
+    --blue-soft:#1E3350; --purple-soft:#33244F; --gold-soft:#4A3B16; --green-soft:#173321; --red-soft:#4A2020;
+    --shadow: 3px 4px 0 rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; user-select:none;}
+  html,body{height:100%; overscroll-behavior:none;}
+  body{ font-family:'Nunito',-apple-system,sans-serif; color:var(--ink); display:flex; justify-content:center; overflow:hidden;
+    background:
+      radial-gradient(120% 70% at 15% -10%, rgba(255,111,145,0.35) 0%, transparent 55%),
+      radial-gradient(120% 70% at 100% 0%, rgba(142,92,255,0.28) 0%, transparent 55%),
+      linear-gradient(160deg, #FFE8CE 0%, var(--bg) 45%, #F3E4CF 100%);
+  }
+  body.dark{ background:
+      radial-gradient(120% 70% at 15% -10%, rgba(255,111,145,0.18) 0%, transparent 55%),
+      radial-gradient(120% 70% at 100% 0%, rgba(142,92,255,0.22) 0%, transparent 55%),
+      linear-gradient(160deg, #1c1730 0%, var(--bg) 45%, #100d1c 100%);
+  }
+  h1,.heading{ font-family:'Baloo 2','Nunito',sans-serif; }
+  button{ font-family:inherit; color:inherit; cursor:pointer; }
+  select{ font-family:inherit; }
+  ::-webkit-scrollbar{ width:0; }
+  #app{ width:100%; max-width:480px; height:100vh; height:100dvh; display:flex; flex-direction:column; position:relative; background:var(--bg); }
+
+  #screen-create{ flex:1; display:flex; flex-direction:column; padding: calc(env(safe-area-inset-top,0px) + 18px) 18px 22px; overflow-y:auto; }
+  #screen-create h1{ font-size:34px; font-weight:800; text-align:center; color:#fff; -webkit-text-stroke:1.5px var(--ink); text-shadow: 0 4px 0 var(--pink-dark), 0 6px 10px rgba(0,0,0,0.25); letter-spacing:0.01em; margin-bottom:2px; }
+  #screen-create .tag{ text-align:center; color:var(--sub); font-size:12.5px; margin-bottom:14px; font-weight:600; }
+  .field-label{ font-size:11px; color:var(--sub); text-transform:uppercase; letter-spacing:0.06em; margin:11px 3px 5px; font-weight:800; }
+  .text-input, select.text-input{ width:100%; padding:12px 13px; border-radius:14px; background:var(--surface); border:var(--border); color:var(--ink); font-size:14.5px; font-weight:700; box-shadow:var(--shadow); }
+  .text-input::placeholder{ color:#c9c2d6; font-weight:600; }
+  .seg{ display:flex; gap:6px; }
+  .seg button{ flex:1; padding:10px 6px; border-radius:12px; background:var(--surface); border:var(--border); font-size:12.5px; font-weight:800; color:var(--ink); box-shadow:var(--shadow); }
+  .seg button.active{ background:var(--pink); color:#fff; }
+  .swatches{ display:flex; gap:7px; flex-wrap:wrap; }
+  .swatch{ width:32px; height:32px; border-radius:50%; border:2.5px solid var(--ink); }
+  .swatch.active{ outline:3px solid var(--purple); outline-offset:2px; }
+  .picker-panel{ display:none; max-height:220px; overflow-y:auto; background:var(--surface); border:var(--border); border-radius:14px; box-shadow:var(--shadow); margin-top:6px; padding:5px; }
+  .picker-panel.open{ display:block; }
+  .picker-item{ display:block; width:100%; text-align:left; padding:10px 12px; border-radius:10px; background:transparent; border:none; font-size:13.5px; font-weight:700; color:var(--ink); }
+  .picker-item:active{ background:var(--purple-soft); }
+  .picker-item.active{ background:var(--gold-soft); }
+  #avatar-sticky{ position:sticky; top:0; z-index:5; background:var(--bg); padding:6px 0 10px; text-align:center; }
+  #avatar-preview-wrap{ display:flex; justify-content:center; }
+  #avatar-preview-name{ font-size:12.5px; font-weight:800; color:var(--sub); margin-top:6px; }
+  .primary-btn{ margin-top:16px; padding:15px; border-radius:16px; background:var(--green); border:var(--border); font-size:15px; font-weight:800; color:#fff; box-shadow:var(--shadow); }
+  .primary-btn:active{ transform:translate(2px,2px) scale(0.98); box-shadow:none; }
+  .secondary-btn{ margin-top:9px; padding:12px; border-radius:14px; background:var(--surface); border:var(--border); font-size:13px; font-weight:800; color:var(--ink); box-shadow:var(--shadow); }
+
+  #screen-game{ flex:1; display:none; flex-direction:column; overflow:hidden; }
+  header{ padding: calc(env(safe-area-inset-top,0px) + 10px) 14px 6px; flex-shrink:0; }
+  .id-card{ background:var(--pink); border:var(--border); border-radius:20px; padding:10px 12px; box-shadow:var(--shadow); }
+  .id-row{ display:flex; align-items:center; gap:10px; }
+  .avatar-box{ width:52px; height:52px; border-radius:50%; background:var(--surface); border:var(--border); flex-shrink:0; overflow:hidden; }
+  .id-text{ flex:1; min-width:0; color:#fff; }
+  #p-name{ font-size:14.5px; font-weight:800; }
+  #p-sub{ font-size:10.3px; opacity:0.92; margin-top:1px; font-weight:700; }
+  #p-badges{ display:flex; gap:4px; margin-top:3px; }
+  .badge{ font-size:9px; font-weight:800; background:rgba(255,255,255,0.85); color:var(--ink); border-radius:8px; padding:2px 6px; }
+  .money-badge{ background:var(--gold); border:var(--border); border-radius:12px; padding:5px 9px; text-align:center; }
+  .icon-btn{ flex-shrink:0; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.25); border:1.5px solid rgba(255,255,255,0.7); font-size:15px; display:flex; align-items:center; justify-content:center; }
+  .icon-btn:active{ background:rgba(255,255,255,0.4); }
+  #p-money{ font-size:12.5px; font-weight:800; color:var(--ink); }
+  #p-money-label{ font-size:7.5px; color:var(--ink); text-transform:uppercase; font-weight:800; opacity:0.7; }
+  .stats-grid{ display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+  #stats-strip{ margin:6px 14px 2px; }
+  .stat{ background:var(--surface); border:var(--border); border-radius:11px; padding:6px 8px; }
+  .stat-top{ display:flex; justify-content:space-between; font-size:9.5px; color:var(--ink); margin-bottom:3px; font-weight:800; }
+  .stat-bar{ height:6px; border-radius:3px; background:#eee; overflow:hidden; border:1.5px solid var(--ink); position:relative; }
+  .stat-bar div{ height:100%; transition:width 0.3s; position:relative; }
+  .stat-bar div::after{ content:''; position:absolute; top:0; left:0; right:0; height:45%; background:rgba(255,255,255,0.45); border-radius:2px 2px 0 0; }
+
+  #feed{ flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 14px 4px; display:flex; flex-direction:column-reverse; }
+  .log-entry{ display:flex; gap:8px; align-items:flex-start; padding:9px 11px; border-radius:13px; background:var(--card); border:2px solid var(--tan-border); margin-bottom:7px; animation:slideIn 0.22s ease-out; }
+  @keyframes slideIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  .log-icon{ width:28px; height:28px; border-radius:50%; background:var(--tan); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .log-text{ font-size:12px; line-height:1.4; font-weight:700; }
+  .log-age{ font-size:9px; color:var(--sub); margin-top:2px; font-weight:700; }
+  .log-entry.good{ border-color:var(--green); } .log-entry.bad{ border-color:var(--red); }
+  .log-entry.good .log-icon{ background:var(--green-soft); } .log-entry.bad .log-icon{ background:var(--red-soft); }
+
+  #ageup-wrap{ padding:5px 14px 4px; flex-shrink:0; display:flex; flex-direction:column; gap:5px; }
+  #ageup-btn{ width:100%; padding:14px; border-radius:16px; background:var(--green); border:var(--border); font-size:14.5px; font-weight:800; color:#fff; box-shadow:var(--shadow); }
+  #ageup-btn:active{ transform:translate(2px,2px); box-shadow:none; }
+  #ageup-btn.prison{ background:var(--red); }
+  #flee-btn{ display:none; width:100%; padding:10px; border-radius:13px; background:var(--surface); border:var(--border); font-size:12px; font-weight:800; box-shadow:var(--shadow); }
+
+  #dock{ position:relative; z-index:20; flex-shrink:0; margin:5px 14px calc(env(safe-area-inset-bottom,0px) + 10px); border-radius:22px; display:flex; padding:6px; gap:3px; background:var(--surface); border:var(--border); box-shadow:var(--shadow), 0 10px 24px rgba(36,31,56,0.18); }
+  .dock-btn{ flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 1px 5px; border-radius:14px; background:transparent; border:none; transition:transform 0.12s; }
+  .dock-btn:active{ background:var(--purple-soft); transform:scale(0.92); }
+  .dock-btn .d-icon{ font-size:18px; width:30px; height:30px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--gold-soft); border:1.5px solid var(--ink); margin-bottom:1px; }
+  .dock-btn .d-label{ font-size:8px; font-weight:800; color:var(--ink); }
+
+  #overlay{ position:fixed; inset:0; background:rgba(36,31,56,0.45); opacity:0; pointer-events:none; transition:opacity 0.25s; display:flex; align-items:flex-end; justify-content:center; z-index:50; }
+  #overlay.open{ opacity:1; pointer-events:auto; }
+  .sheet{ display:none; width:100%; max-width:480px; max-height:87vh; overflow-y:auto; background:var(--bg); border:var(--border); border-bottom:none; border-radius:24px 24px 0 0; padding:8px 15px calc(env(safe-area-inset-bottom,0px) + 20px); transform:translateY(100%); transition:transform 0.3s cubic-bezier(.32,.72,0,1); }
+  .sheet.active{ display:block; }
+  #overlay.open .sheet.active{ transform:translateY(0); }
+  .sheet-handle{ width:36px; height:5px; border-radius:3px; background:var(--tan-strong); margin:6px auto 9px; }
+  .sheet-title{ font-size:18px; font-weight:800; margin-bottom:9px; text-align:center; font-family:'Baloo 2',sans-serif; color:var(--pink-dark); }
+  .sub-tabs{ display:flex; gap:5px; margin-bottom:9px; overflow-x:auto; }
+  .sub-tab{ flex:1; padding:8px 3px; border-radius:11px; background:var(--surface); border:var(--border); font-size:10.3px; font-weight:800; white-space:nowrap; }
+  .sub-tab.active{ background:var(--purple); border-color:var(--ink); color:#fff; }
+
+  .card{ background:var(--card); border:var(--border); border-radius:15px; padding:11px 12px; margin-bottom:8px; box-shadow:var(--shadow); }
+  .card-top{ display:flex; align-items:center; gap:9px; }
+  .card-icon{ width:36px; height:36px; border-radius:11px; background:var(--tan); border:2px solid var(--ink); display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; overflow:hidden; }
+  .card-name{ font-size:13px; font-weight:800; } .card-sub{ font-size:10px; color:var(--sub); margin-top:1px; font-weight:700; }
+  .card-actions{ display:flex; gap:5px; margin-top:9px; flex-wrap:wrap; }
+  .mini-btn{ flex:1; min-width:74px; padding:8px 5px; border-radius:10px; background:var(--blue-soft); border:2px solid var(--ink); font-size:10.3px; font-weight:800; }
+  .mini-btn:active{ transform:translate(1px,1px) scale(0.96); }
+  .mini-btn.danger{ background:var(--red-soft); } .mini-btn.gold{ background:var(--gold-soft); } .mini-btn.green{ background:var(--green-soft); } .mini-btn.purple{ background:var(--purple-soft); }
+  .mini-btn:disabled{ opacity:0.35; }
+  .rel-bar{ height:6px; border-radius:3px; background:#eee; overflow:hidden; margin-top:7px; border:1.5px solid var(--ink); }
+  .rel-bar div{ height:100%; background:var(--purple); }
+  .empty-hint{ text-align:center; color:var(--sub); font-size:12px; padding:22px 10px; font-weight:700; }
+  .tag-pill{ display:inline-block; font-size:9px; font-weight:800; background:var(--purple-soft); border:1.5px solid var(--ink); border-radius:8px; padding:2px 6px; margin-top:3px; }
+  .limit-pill{ flex-shrink:0; align-self:flex-start; font-size:10px; font-weight:800; background:var(--gold-soft); border:1.5px solid var(--ink); border-radius:9px; padding:3px 7px; white-space:nowrap; }
+  .limit-pill.used{ background:var(--red-soft); opacity:0.8; }
+
+  #sheet-event{ text-align:center; } #event-icon{ font-size:38px; margin:5px 0 8px; }
+  #event-text{ font-size:14px; line-height:1.5; margin-bottom:14px; font-weight:700; }
+  #event-choices{ display:flex; flex-direction:column; gap:7px; }
+  .choice-btn{ padding:13px; border-radius:14px; background:var(--surface); border:var(--border); font-size:13px; font-weight:800; box-shadow:var(--shadow); }
+  .choice-btn:active{ background:var(--purple-soft); transform:translate(2px,2px) scale(0.98); box-shadow:none; }
+
+  #obituary{ position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; background:rgba(15,12,24,0.88); padding:22px; }
+  #obituary.show{ display:flex; }
+  .obit-card{ width:100%; max-width:400px; background:var(--bg); border:var(--border); border-radius:22px; padding:24px 20px; text-align:center; box-shadow:6px 6px 0 rgba(0,0,0,0.3); }
+  .obit-icon{ font-size:42px; } .obit-name{ font-size:19px; font-weight:800; margin-top:7px; font-family:'Baloo 2',sans-serif; }
+  .obit-span{ font-size:12px; color:var(--sub); margin-top:2px; font-weight:700; }
+  .obit-cause{ margin-top:11px; font-size:12.5px; padding:9px 11px; border-radius:11px; background:var(--red-soft); border:2px solid var(--ink); font-weight:700; }
+  .obit-stats{ text-align:left; margin-top:14px; } .obit-row{ display:flex; justify-content:space-between; font-size:11.5px; padding:6px 0; border-bottom:2px dashed var(--tan-strong); font-weight:700; }
+  .obit-row .k{ color:var(--sub); }
+
+  .cheat-row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .cheat-row label{ flex:0 0 96px; font-size:11px; font-weight:800; }
+  .cheat-row input[type=number]{ flex:1; padding:9px 10px; border-radius:10px; border:var(--border); font-weight:700; }
+  .switch{ position:relative; width:44px; height:26px; border-radius:16px; background:rgba(0,0,0,0.15); border:2px solid var(--ink); flex-shrink:0; }
+  .switch.on{ background:var(--green); }
+  .switch .knob{ position:absolute; top:1px; left:1px; width:20px; height:20px; border-radius:50%; background:#fff; border:1.5px solid var(--ink); transition:transform 0.2s; }
+  .switch.on .knob{ transform:translateX(18px); }
+  .setting-row{ display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:var(--border); border-radius:13px; padding:11px 13px; margin-bottom:8px; box-shadow:var(--shadow); }
+  .setting-label{ font-size:13px; font-weight:800; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="screen-create">
+    <h1>🎲 Lebensweg</h1>
+    <div class="tag">Erschaffe deinen Charakter</div>
+
+    <div id="create-continue-wrap" style="display:none; margin-bottom:12px;">
+      <div class="card" style="text-align:center;">
+        <div class="card-name" style="margin-bottom:8px;">Du hast ein Leben in Arbeit</div>
+        <button class="primary-btn" id="btn-continue" style="width:100%; margin-top:0;">▶️ Fortfahren</button>
+      </div>
+    </div>
+
+    <div id="avatar-sticky">
+      <div id="avatar-preview-wrap"></div>
+      <div id="avatar-preview-name">Dein Charakter</div>
+    </div>
+
+    <div class="field-label">Vorname</div>
+    <input class="text-input" id="in-first" placeholder="z. B. Alex" maxlength="16">
+    <div class="field-label">Nachname</div>
+    <input class="text-input" id="in-last" placeholder="z. B. Berger" maxlength="16">
+
+    <div class="field-label">Geschlecht</div>
+    <div class="seg" id="seg-gender">
+      <button data-v="weiblich">Weiblich</button>
+      <button data-v="männlich">Männlich</button>
+    </div>
+
+    <div class="field-label">Geburtsland</div>
+    <button class="text-input" id="btn-country" style="text-align:left; display:flex; justify-content:space-between; align-items:center;">
+      <span id="country-label">Deutschland</span><span>▾</span>
+    </button>
+    <div id="country-picker" class="picker-panel"></div>
+    <div class="field-label">Stadt</div>
+    <button class="text-input" id="btn-city" style="text-align:left; display:flex; justify-content:space-between; align-items:center;">
+      <span id="city-label">Berlin</span><span>▾</span>
+    </button>
+    <div id="city-picker" class="picker-panel"></div>
+
+    <div class="field-label">Aussehen</div>
+    <div class="field-label">Hautfarbe</div>
+    <div class="swatches" id="sw-skin"></div>
+    <div class="field-label">Haarfarbe</div>
+    <div class="swatches" id="sw-hair"></div>
+    <div class="field-label">Frisur</div>
+    <div class="seg" id="seg-hairstyle" style="flex-wrap:wrap;"></div>
+    <div class="field-label">Augenfarbe</div>
+    <div class="swatches" id="sw-eyes"></div>
+    <div class="field-label">Outfit-Farbe</div>
+    <div class="swatches" id="sw-outfit"></div>
+    <div class="field-label" id="facial-label" style="display:none;">Gesichtsbehaarung</div>
+    <div class="seg" id="seg-facial" style="display:none;">
+      <button data-v="keiner">Glatt</button><button data-v="bart">Bart</button><button data-v="schnurrbart">Schnurrbart</button>
+    </div>
+    <div class="setting-row" style="margin-top:11px;">
+      <div class="setting-label">👓 Brille</div>
+      <button class="switch" id="glasses-toggle"><div class="knob"></div></button>
+    </div>
+
+    <button class="primary-btn" id="btn-start">🌟 Leben beginnen</button>
+    <button class="secondary-btn" id="btn-random-all">🎲 Alles zufällig ausfüllen</button>
+  </div>
+
+  <div id="screen-game">
+    <header>
+      <div class="id-card">
+        <div class="id-row">
+          <div class="avatar-box" id="p-avatar"></div>
+          <div class="id-text">
+            <div id="p-name">–</div>
+            <div id="p-sub">–</div>
+            <div id="p-badges"></div>
+          </div>
+          <div class="money-badge"><div id="p-money">0 €</div><div id="p-money-label">Bankguthaben</div></div>
+          <button class="icon-btn" id="btn-settings">⚙️</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="feed"></div>
+
+    <div id="ageup-wrap">
+      <button id="flee-btn">🏃 Fluchtversuch wagen</button>
+      <button id="ageup-btn">🎂 Ein Jahr älter werden</button>
+    </div>
+
+    <div class="stats-grid" id="stats-strip">
+      <div class="stat"><div class="stat-top"><span>❤️ Gesundheit</span><span id="v-health">50</span></div><div class="stat-bar"><div id="b-health" style="width:50%;background:var(--red);"></div></div></div>
+      <div class="stat"><div class="stat-top"><span>😊 Lebensfreude</span><span id="v-happiness">50</span></div><div class="stat-bar"><div id="b-happiness" style="width:50%;background:var(--gold);"></div></div></div>
+      <div class="stat"><div class="stat-top"><span>🧠 Intelligenz</span><span id="v-smarts">50</span></div><div class="stat-bar"><div id="b-smarts" style="width:50%;background:var(--blue);"></div></div></div>
+      <div class="stat"><div class="stat-top"><span>✨ Aussehen</span><span id="v-looks">50</span></div><div class="stat-bar"><div id="b-looks" style="width:50%;background:var(--purple);"></div></div></div>
+    </div>
+
+    <div id="dock">
+      <button class="dock-btn" data-sheet="bildung"><span class="d-icon">🎓</span><span class="d-label" id="dock-label-bildung">Bildung</span></button>
+      <button class="dock-btn" data-sheet="vermoegen"><span class="d-icon">💰</span><span class="d-label">Vermögen</span></button>
+      <button class="dock-btn" data-sheet="beziehungen"><span class="d-icon">👨‍👩‍👧</span><span class="d-label">Beziehungen</span></button>
+      <button class="dock-btn" data-sheet="aktivitaeten"><span class="d-icon">🎯</span><span class="d-label">Aktivitäten</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="overlay">
+  <div class="sheet" id="sheet-beziehungen">
+    <div class="sheet-handle"></div><div class="sheet-title">Beziehungen</div>
+    <div id="rel-list"></div>
+  </div>
+
+  <div class="sheet" id="sheet-bildung">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="work-title">Bildung & Beruf</div>
+    <button class="secondary-btn" id="work-back" style="display:none; margin-top:0;">‹ Zurück zur Übersicht</button>
+    <div class="card"><div class="card-name">Aktueller Status</div><div class="card-sub" id="work-status">–</div></div>
+    <div id="work-content"></div>
+  </div>
+
+  <div class="sheet" id="sheet-aktivitaeten">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="akt-title">Aktivitäten</div>
+    <button class="secondary-btn" id="akt-back" style="display:none; margin-top:0;">‹ Zurück zur Übersicht</button>
+    <div id="akt-content"></div>
+  </div>
+
+  <div class="sheet" id="sheet-vermoegen">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="verm-title">Markt</div>
+    <button class="secondary-btn" id="verm-back" style="display:none; margin-top:0;">‹ Zurück zur Übersicht</button>
+    <div class="card"><div class="card-name">Kontostand</div><div class="card-sub" id="verm-money">0 €</div></div>
+    <div id="verm-content"></div>
+  </div>
+
+  <div class="sheet" id="sheet-einstellungen">
+    <div class="sheet-handle"></div><div class="sheet-title">Mehr</div>
+    <div class="setting-row"><div class="setting-label">🔊 Sound</div><button class="switch on" id="sound-toggle"><div class="knob"></div></button></div>
+    <div class="setting-row"><div class="setting-label">🌙 Dunkelmodus</div><button class="switch" id="dark-toggle"><div class="knob"></div></button></div>
+    <div class="field-label">Lautstärke</div>
+    <input type="range" id="volume-slider" min="0" max="100" value="60" style="width:100%;">
+    <div class="field-label">Übersicht</div>
+    <button class="secondary-btn" id="open-achievements" style="width:100%;">🏆 Erfolge</button>
+    <button class="secondary-btn" id="open-stats" style="width:100%;">📊 Statistiken</button>
+    <div class="field-label">Sonstiges</div>
+    <button class="secondary-btn" id="open-cheats" style="width:100%;">🛠 Cheat-Menü öffnen</button>
+    <button class="secondary-btn" id="btn-end-life" style="width:100%; background:var(--red-soft);">🏁 Dieses Leben beenden</button>
+  </div>
+
+  <div class="sheet" id="sheet-achievements">
+    <div class="sheet-handle"></div><div class="sheet-title">🏆 Erfolge</div>
+    <div id="achievement-progress" class="card"></div>
+    <div id="achievement-list"></div>
+  </div>
+
+  <div class="sheet" id="sheet-stats">
+    <div class="sheet-handle"></div><div class="sheet-title">📊 Statistiken</div>
+    <div class="field-label">Dieses Leben</div>
+    <div id="stats-current"></div>
+    <div class="field-label">Insgesamt (alle Leben)</div>
+    <div id="stats-alltime"></div>
+  </div>
+
+  <div class="sheet" id="sheet-cheats">
+    <div class="sheet-handle"></div><div class="sheet-title">🛠 Cheat-Menü</div>
+    <div class="cheat-row"><label>Geld</label><input type="number" id="ch-money"></div>
+    <div class="cheat-row"><label>Alter</label><input type="number" id="ch-age"></div>
+    <div class="cheat-row"><label>Gesundheit</label><input type="number" id="ch-health"></div>
+    <div class="cheat-row"><label>Lebensfreude</label><input type="number" id="ch-happiness"></div>
+    <div class="cheat-row"><label>Intelligenz</label><input type="number" id="ch-smarts"></div>
+    <div class="cheat-row"><label>Aussehen</label><input type="number" id="ch-looks"></div>
+    <div class="cheat-row"><label>Fitness</label><input type="number" id="ch-fitness"></div>
+    <div class="cheat-row"><label>Ruhm</label><input type="number" id="ch-fame"></div>
+    <button class="primary-btn" id="ch-apply" style="width:100%; margin-top:2px;">Werte übernehmen</button>
+
+    <div class="field-label">Spezial</div>
+    <div class="setting-row"><div class="setting-label">👑 Nächstes Leben königlich</div><button class="switch" id="ch-royal-toggle"><div class="knob"></div></button></div>
+    <button class="secondary-btn" id="ch-fame-on" style="width:100%;">⭐ Berühmtheit sofort aktivieren</button>
+    <button class="secondary-btn" id="ch-unlock-careers" style="width:100%;">🎤 Alle Sonderkarrieren freischalten</button>
+    <button class="secondary-btn" id="ch-add-money" style="width:100%;">💰 +100.000 € geben</button>
+    <button class="secondary-btn" id="ch-random-event" style="width:100%;">🎲 Zufallsereignis auslösen</button>
+    <button class="secondary-btn" id="ch-skip-event" style="width:100%;">⏭ Aktuelles Ereignis überspringen</button>
+  </div>
+
+  <div class="sheet" id="sheet-license">
+    <div class="sheet-handle"></div><div class="sheet-title" id="license-title">Führerschein-Prüfung</div>
+    <button class="secondary-btn" id="license-back" style="width:100%; margin-top:0;">‹ Zurück</button>
+    <div id="license-content"></div>
+  </div>
+
+  <div class="sheet" id="sheet-event">
+    <div class="sheet-handle"></div>
+    <div id="event-icon">✨</div>
+    <div id="event-text">…</div>
+    <div id="event-choices"></div>
+    <button class="secondary-btn" id="btn-random-choice" style="width:100%;">🎲 Zufällig entscheiden</button>
+  </div>
+</div>
+
+<div id="obituary">
+  <div class="obit-card">
+    <div class="obit-icon">⚰️</div>
+    <div class="obit-name" id="obit-name">–</div>
+    <div class="obit-span" id="obit-span">–</div>
+    <div class="obit-cause" id="obit-cause">–</div>
+    <div class="obit-stats" id="obit-stats"></div>
+    <button class="primary-btn" id="btn-restart" style="width:100%;">🔄 Neues Leben beginnen</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ================= AUDIO ================= */
+  let actx=null;
+  const audioSettings = { on:true, volume:0.6 };
+  function ensureAudio(){ if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)(); }
+  function tone(freq,dur,type,delay,peak){
+    if(!audioSettings.on) return; ensureAudio();
+    const t0=actx.currentTime+(delay||0);
+    const o=actx.createOscillator(), g=actx.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq,t0);
+    g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(peak*audioSettings.volume,t0+0.008);
+    g.gain.exponentialRampToValueAtTime(0.001,t0+dur);
+    o.connect(g).connect(actx.destination); o.start(t0); o.stop(t0+dur+0.02);
+  }
+  const sfx = {
+    ageup:()=>{ tone(500,0.08,'sine',0,0.2); tone(700,0.1,'sine',0.07,0.16); },
+    buy:()=>{ tone(660,0.09,'triangle',0,0.2); tone(990,0.12,'triangle',0.06,0.18); },
+    good:()=>{ tone(880,0.1,'sine',0,0.18); },
+    bad:()=>{ tone(220,0.15,'sawtooth',0,0.15); },
+    money:()=>{ tone(1200,0.06,'square',0,0.12); tone(1500,0.06,'square',0.05,0.1); },
+    death:()=>{ tone(180,0.4,'sine',0,0.18); tone(140,0.5,'sine',0.15,0.14); },
+    click:()=>{ tone(1000,0.04,'sine',0,0.1); },
+  };
+
+  /* ================= AVATAR ================= */
+  const skinTones = ['#FFE0BD','#F1C27D','#E0AC69','#C68642','#8D5524','#4A2E1E'];
+  const hairColors = ['#2B1B12','#5A3A22','#8C5A2B','#C99A3B','#B5472B','#1C1C1C','#EDEDED','#7A5C3E'];
+  const eyeColors = ['#3B2A20','#4A7A8C','#4C8A5C','#6B4A9C','#2E2E2E'];
+  const outfitColors = ['#FF6F91','#4AA8FF','#37B863','#8E5CFF','#FFB800','#2B2640','#E14E76','#00A896'];
+  const hairstylesByGender = {
+    weiblich: ['kurz','lang','lockig','zopf','pony','hochgesteckt','glatze'],
+    männlich: ['kurz','seitenscheitel','buerste','lockig','afro','irokese','glatze'],
+  };
+  const hairstyleLabels = { kurz:'Kurz', lang:'Lang', lockig:'Lockig', zopf:'Zopf', seitenscheitel:'Seitenscheitel', buerste:'Bürste', glatze:'Glatze', pony:'Bob mit Pony', hochgesteckt:'Hochgesteckt', afro:'Afro', irokese:'Irokese' };
+
+  let avatarIdSeq = 0;
+  function avatarSVG(av){
+    const uid = 'a'+(avatarIdSeq++);
+    const shadow = shadeColor(av.skin, -20);
+    const highlight = shadeColor(av.skin, 18);
+    const bgShadow = shadeColor(av.outfit, -22);
+    const mouthColor = shadeColor(av.skin, -38);
+    const lipColor = shadeColor(av.skin, -22);
+    const isF = av.gender==='weiblich';
+    const headRx = isF ? 24 : 27, headRy = isF ? 27 : 26;
+
+    let hairBack = '', hairFront = '';
+    if(av.hairStyle==='kurz'){
+      hairFront = `<path d="M23 30 Q23 9 50 9 Q77 9 77 30 Q50 19 23 30 Z" fill="${av.hair}"/>`;
+    } else if(av.hairStyle==='lang'){
+      hairBack = `<rect x="19" y="27" width="15" height="50" rx="7.5" fill="${av.hair}"/><rect x="66" y="27" width="15" height="50" rx="7.5" fill="${av.hair}"/>`;
+      hairFront = `<path d="M22 28 Q22 8 50 8 Q78 8 78 28 Q50 17 22 28 Z" fill="${av.hair}"/>`;
+    } else if(av.hairStyle==='lockig'){
+      hairFront = `
+        <circle cx="30" cy="24" r="9" fill="${av.hair}"/><circle cx="42" cy="16" r="10" fill="${av.hair}"/>
+        <circle cx="58" cy="16" r="10" fill="${av.hair}"/><circle cx="70" cy="24" r="9" fill="${av.hair}"/>
+        <circle cx="50" cy="13" r="10" fill="${av.hair}"/>`;
+    } else if(av.hairStyle==='zopf'){
+      hairFront = `<path d="M23 30 Q23 9 50 9 Q77 9 77 30 Q50 19 23 30 Z" fill="${av.hair}"/>
+        <path d="M67 26 Q80 35 76 60 Q73 61 72 58 Q76 38 63 29 Z" fill="${av.hair}"/>`;
+    } else if(av.hairStyle==='seitenscheitel'){
+      hairFront = `<path d="M23 29 Q24 8 40 8 Q78 9 77 29 Q50 18 23 29 Z" fill="${av.hair}"/>`;
+    } else if(av.hairStyle==='buerste'){
+      hairFront = `<path d="M27 24 Q30 15 50 14 Q70 15 73 24 Q50 17 27 24 Z" fill="${av.hair}" opacity="0.92"/>`;
+    } else if(av.hairStyle==='pony'){
+      hairBack = `<rect x="21" y="30" width="10" height="26" rx="5" fill="${av.hair}"/><rect x="69" y="30" width="10" height="26" rx="5" fill="${av.hair}"/>`;
+      hairFront = `<path d="M22 37 Q22 9 50 9 Q78 9 78 37 Q50 25 22 37 Z" fill="${av.hair}"/>`;
+    } else if(av.hairStyle==='hochgesteckt'){
+      hairFront = `<path d="M23 30 Q23 9 50 9 Q77 9 77 30 Q50 19 23 30 Z" fill="${av.hair}"/><circle cx="50" cy="8" r="8" fill="${av.hair}"/>`;
+    } else if(av.hairStyle==='afro'){
+      hairFront = `<circle cx="50" cy="21" r="24" fill="${av.hair}"/>`;
+    } else if(av.hairStyle==='irokese'){
+      hairFront = `<path d="M40 22 Q50 -4 60 22 Q50 12 40 22 Z" fill="${av.hair}"/>`;
+    } else { hairFront=''; hairBack=''; }
+
+    let facial='';
+    if(av.gender==='männlich' && av.facial==='bart'){
+      facial = `<path d="M28 47 C26 64,34 75,50 75 C66 75,74 64,72 47 C72 58,64 69,50 69 C36 69,28 58,28 47 Z" fill="${av.hair}" opacity="0.94"/>`;
+    } else if(av.gender==='männlich' && av.facial==='schnurrbart'){
+      facial = `<path d="M39 55 Q44.5 58 50 56 Q55.5 58 61 55 Q56 52.5 50 53.5 Q44 52.5 39 55 Z" fill="${av.hair}"/>`;
+    }
+
+    let glasses='';
+    if(av.glasses){
+      glasses = `<g stroke="${av.hair==='#EDEDED'?'#333':'#2B2640'}" stroke-width="2.4" fill="none">
+        <rect x="29" y="42.5" width="18" height="13.5" rx="5.5"/>
+        <rect x="53" y="42.5" width="18" height="13.5" rx="5.5"/>
+        <line x1="47" y1="49" x2="53" y2="49"/>
+      </g>`;
+    }
+    const lashes = isF ? `
+      <path d="M34.5 42.5 L32 39.5" stroke="${av.eyes}" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M65.5 42.5 L68 39.5" stroke="${av.eyes}" stroke-width="1.2" stroke-linecap="round"/>` : '';
+    const eyebrowWidth = isF ? 2.2 : 3.4;
+    const mouth = isF
+      ? `<path d="M40 59 Q50 67 60 59 Q50 63.5 40 59 Z" fill="${lipColor}" opacity="0.85"/>`
+      : `<path d="M40 60 Q50 65.5 60 60" stroke="${mouthColor}" stroke-width="2.8" fill="none" stroke-linecap="round"/>`;
+
+    return `<svg viewBox="0 0 100 88" width="100%" height="100%">
+      <defs>
+        <radialGradient id="bgGrad-${uid}" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="${shadeColor(av.outfit,14)}"/>
+          <stop offset="100%" stop-color="${bgShadow}"/>
+        </radialGradient>
+        <radialGradient id="skinGrad-${uid}" cx="36%" cy="28%" r="78%">
+          <stop offset="0%" stop-color="${highlight}"/>
+          <stop offset="60%" stop-color="${av.skin}"/>
+          <stop offset="100%" stop-color="${shadow}"/>
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="44" r="46" fill="url(#bgGrad-${uid})"/>
+      ${hairBack}
+      <ellipse cx="24" cy="50" rx="4" ry="6" fill="${av.skin}"/>
+      <ellipse cx="76" cy="50" rx="4" ry="6" fill="${av.skin}"/>
+      <ellipse cx="50" cy="48" rx="${headRx}" ry="${headRy}" fill="url(#skinGrad-${uid})"/>
+      ${facial}
+      <path d="M33 40 Q38 ${isF?36:35} 44 39" stroke="${av.hair}" stroke-width="${eyebrowWidth}" fill="none" stroke-linecap="round"/>
+      <path d="M56 39 Q62 ${isF?36:35} 67 40" stroke="${av.hair}" stroke-width="${eyebrowWidth}" fill="none" stroke-linecap="round"/>
+      <ellipse cx="39" cy="47" rx="4.6" ry="5.2" fill="#fff"/>
+      <ellipse cx="61" cy="47" rx="4.6" ry="5.2" fill="#fff"/>
+      <circle cx="39.5" cy="47.5" r="2.9" fill="${av.eyes}"/>
+      <circle cx="61.5" cy="47.5" r="2.9" fill="${av.eyes}"/>
+      <circle cx="40.3" cy="46.6" r="0.9" fill="#fff"/>
+      <circle cx="62.3" cy="46.6" r="0.9" fill="#fff"/>
+      ${lashes}
+      <path d="M49 48 Q47 54 49.5 56" stroke="${shadow}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      ${mouth}
+      ${glasses}
+      ${hairFront}
+    </svg>`;
+  }
+  function shadeColor(hex, percent){
+    const num = parseInt(hex.replace('#',''),16);
+    let r=(num>>16)+Math.round(255*(percent/100));
+    let g=((num>>8)&0x00FF)+Math.round(255*(percent/100));
+    let b=(num&0x0000FF)+Math.round(255*(percent/100));
+    r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+    return '#'+(0x1000000+r*0x10000+g*0x100+b).toString(16).slice(1);
+  }
+  function randomAvatar(gender){
+    const g = gender||pick(['weiblich','männlich']);
+    return {
+      gender: g,
+      skin: pick(skinTones), hair: pick(hairColors),
+      hairStyle: pick(hairstylesByGender[g]),
+      eyes: pick(eyeColors), outfit: pick(outfitColors),
+      facial: g==='männlich' ? pick(['keiner','keiner','bart','schnurrbart']) : 'keiner',
+      glasses: Math.random()<0.22
+    };
+  }
+
+  /* ================= DATA ================= */
+  const namesF = ['Mia','Emma','Hannah','Lena','Sofia','Anna','Lara','Nora','Ida','Marie','Leni','Emilia','Clara','Frieda','Paula','Zoe','Amelie','Luisa'];
+  const namesM = ['Leon','Paul','Ben','Finn','Noah','Elias','Luis','Felix','Jonas','Max','Anton','Theo','David','Julian','Tom','Milo','Jakob','Samuel'];
+  const lastNames = ['Müller','Schmidt','Schneider','Fischer','Weber','Wagner','Becker','Hoffmann','Schulz','Koch','Richter','Bauer','Klein','Wolf','Neumann','König','Vogel','Sommer'];
+
+  const countryData = {
+    'Deutschland':['Berlin','Hamburg','München','Köln'],
+    'Österreich':['Wien','Graz','Linz','Salzburg'],
+    'Schweiz':['Zürich','Genf','Bern','Basel'],
+    'Frankreich':['Paris','Lyon','Marseille','Nizza'],
+    'Italien':['Rom','Mailand','Neapel','Turin'],
+    'Spanien':['Madrid','Barcelona','Sevilla','Valencia'],
+    'Vereinigtes Königreich':['London','Manchester','Edinburgh','Liverpool'],
+    'USA':['New York','Los Angeles','Chicago','Miami'],
+    'Kanada':['Toronto','Vancouver','Montreal','Calgary'],
+    'Japan':['Tokio','Osaka','Kyoto','Sapporo'],
+    'Südkorea':['Seoul','Busan','Incheon','Daegu'],
+    'Brasilien':['São Paulo','Rio de Janeiro','Salvador','Brasília'],
+    'Australien':['Sydney','Melbourne','Brisbane','Perth'],
+    'Niederlande':['Amsterdam','Rotterdam','Den Haag','Utrecht'],
+    'Schweden':['Stockholm','Göteborg','Malmö','Uppsala'],
+    'Griechenland':['Athen','Thessaloniki','Patras','Heraklion'],
+    'Vereinigte Arabische Emirate':['Dubai','Abu Dhabi','Sharjah','Ajman'],
+    'Monaco':['Monaco-Ville','La Condamine','Monte-Carlo','Fontvieille'],
+  };
+  const countries = Object.keys(countryData);
+
+  const jobsGelegenheit = [
+    { title:'Rasenmähen', minAge:10, minSmarts:0, salary:400, edu:'none' },
+    { title:'Babysitten', minAge:12, minSmarts:0, salary:700, edu:'none' },
+    { title:'Hunde ausführen', minAge:11, minSmarts:0, salary:500, edu:'none' },
+    { title:'Nachbarschaftshilfe', minAge:10, minSmarts:0, salary:350, edu:'none' },
+    { title:'Autos waschen', minAge:13, minSmarts:0, salary:600, edu:'none' },
+    { title:'Zeitungsausträger', minAge:13, minSmarts:0, salary:900, edu:'none' },
+    { title:'Nachhilfe geben (Gelegenheit)', minAge:14, minSmarts:40, salary:1200, edu:'none' },
+  ];
+  const jobsTeilzeit = [
+    { title:'Kassierer/in', minAge:16, minSmarts:15, salary:16000, edu:'none' },
+    { title:'Kellner/in', minAge:16, minSmarts:15, salary:17500, edu:'none' },
+    { title:'Lagerhelfer/in', minAge:16, minSmarts:15, salary:17000, edu:'none' },
+    { title:'Regalauffüller/in', minAge:16, minSmarts:10, salary:15500, edu:'none' },
+    { title:'Fahrradkurier/in', minAge:16, minSmarts:15, salary:16500, edu:'none' },
+    { title:'Nachhilfelehrer/in', minAge:16, minSmarts:50, salary:19000, edu:'none' },
+    { title:'Rezeptionist/in', minAge:17, minSmarts:30, salary:18500, edu:'none' },
+  ];
+  const jobsFest = [
+    { title:'Bürokraft', minAge:18, minSmarts:35, salary:26000, edu:'realschule' },
+    { title:'Verkäufer/in', minAge:18, minSmarts:25, salary:24000, edu:'none' },
+    { title:'Elektriker/in', minAge:19, minSmarts:35, salary:34000, edu:'ausbildung' },
+    { title:'Mechatroniker/in', minAge:19, minSmarts:35, salary:35000, edu:'ausbildung' },
+    { title:'Koch/Köchin', minAge:19, minSmarts:30, salary:30000, edu:'ausbildung' },
+    { title:'Friseur/in', minAge:19, minSmarts:25, salary:26000, edu:'ausbildung' },
+    { title:'Bankkaufmann/-frau', minAge:19, minSmarts:40, salary:32000, edu:'ausbildung' },
+    { title:'IT-Systemadministrator/in', minAge:19, minSmarts:45, salary:36000, edu:'ausbildung' },
+    { title:'Rettungssanitäter/in', minAge:20, minSmarts:40, salary:32000, edu:'ausbildung' },
+    { title:'Krankenpfleger/in', minAge:21, minSmarts:50, salary:36000, edu:'realschule' },
+    { title:'Feuerwehrmann/-frau', minAge:21, minSmarts:40, salary:38000, edu:'realschule' },
+    { title:'Journalist/in', minAge:22, minSmarts:55, salary:34000, edu:'studium', degree:'Kommunikation' },
+    { title:'Softwareentwickler/in', minAge:22, minSmarts:65, salary:52000, edu:'studium', degree:'Informatik' },
+    { title:'Grafikdesigner/in', minAge:22, minSmarts:45, salary:32000, edu:'studium', degree:'Kunst & Design' },
+    { title:'Architekt/in', minAge:23, minSmarts:65, salary:48000, edu:'studium', degree:'Architektur' },
+    { title:'Lehrer/in', minAge:23, minSmarts:60, salary:42000, edu:'studium', degree:'Lehramt' },
+    { title:'Ingenieur/in', minAge:23, minSmarts:70, salary:55000, edu:'studium', degree:'Ingenieurwesen' },
+    { title:'Psychologe/Psychologin', minAge:24, minSmarts:65, salary:45000, edu:'studium', degree:'Psychologie' },
+    { title:'Tierarzt/Tierärztin', minAge:25, minSmarts:75, salary:58000, edu:'studium', degree:'Veterinärmedizin' },
+    { title:'Anwalt/Anwältin', minAge:25, minSmarts:80, salary:70000, edu:'studium', degree:'Jura' },
+    { title:'Arzt/Ärztin', minAge:26, minSmarts:85, salary:85000, edu:'studium', degree:'Medizin' },
+    { title:'Zahnarzt/Zahnärztin', minAge:26, minSmarts:80, salary:82000, edu:'studium', degree:'Medizin' },
+    { title:'Pilot/in', minAge:24, minSmarts:70, salary:78000, edu:'studium', degree:'Ingenieurwesen' },
+    { title:'Manager/in', minAge:28, minSmarts:60, salary:65000, edu:'studium', degree:'Betriebswirtschaft' },
+    { title:'Investmentbanker/in', minAge:26, minSmarts:75, salary:95000, edu:'studium', degree:'Betriebswirtschaft' },
+    { title:'Geschäftsführer/in', minAge:35, minSmarts:75, salary:120000, edu:'studium' },
+  ];
+  const militaryRanks = [
+    { title:'Rekrut', salary:22000, minYears:2 },
+    { title:'Gefreiter', salary:28000, minYears:3 },
+    { title:'Unteroffizier', salary:36000, minYears:4 },
+    { title:'Feldwebel', salary:46000, minYears:5 },
+    { title:'Hauptmann', salary:54000, minYears:6 },
+    { title:'Major', salary:62000, minYears:99 },
+  ];
+  const specialCareers = [
+    { id:'saenger', title:'Sänger/in', minFameBoost:3, incomeMin:5000, incomeMax:180000 },
+    { id:'schauspieler', title:'Schauspieler/in', minFameBoost:3, incomeMin:6000, incomeMax:220000 },
+    { id:'sportler', title:'Profisportler/in', minFameBoost:3, incomeMin:8000, incomeMax:300000 },
+    { id:'influencer', title:'Influencer/in', minFameBoost:2, incomeMin:2000, incomeMax:150000 },
+  ];
+
+  const ausbildungList = [
+    { name:'Elektriker/in', years:3, smartsReq:30, tuition:0 },
+    { name:'Mechatroniker/in', years:3, smartsReq:30, tuition:0 },
+    { name:'Bürokauffrau/-mann', years:3, smartsReq:25, tuition:0 },
+    { name:'Friseur/in', years:3, smartsReq:20, tuition:0 },
+    { name:'Koch/Köchin', years:3, smartsReq:20, tuition:0 },
+    { name:'Bankkaufmann/-frau', years:3, smartsReq:35, tuition:0 },
+    { name:'IT-Systemadministrator/in', years:2, smartsReq:35, tuition:0 },
+    { name:'Rettungssanitäter/in', years:3, smartsReq:30, tuition:0 },
+    { name:'Tischler/in', years:3, smartsReq:20, tuition:0 },
+    { name:'Gärtner/in', years:3, smartsReq:18, tuition:0 },
+  ];
+  const degrees = [
+    { name:'Betriebswirtschaft', years:3, smartsReq:45, tuition:1500 },
+    { name:'Informatik', years:4, smartsReq:55, tuition:1500 },
+    { name:'Ingenieurwesen', years:4, smartsReq:55, tuition:1500 },
+    { name:'Lehramt', years:4, smartsReq:50, tuition:1200 },
+    { name:'Jura', years:5, smartsReq:65, tuition:1800 },
+    { name:'Medizin', years:6, smartsReq:75, tuition:2000 },
+    { name:'Kunst & Design', years:3, smartsReq:35, tuition:1200 },
+    { name:'Psychologie', years:4, smartsReq:55, tuition:1400 },
+    { name:'Kommunikation', years:3, smartsReq:40, tuition:1300 },
+    { name:'Architektur', years:5, smartsReq:60, tuition:1700 },
+    { name:'Veterinärmedizin', years:5, smartsReq:65, tuition:1800 },
+    { name:'Physik', years:4, smartsReq:65, tuition:1500 },
+    { name:'Musik', years:3, smartsReq:30, tuition:1300 },
+  ];
+
+  const marketCats = {
+    fahrzeuge:{ license:'auto', licenseMinAge:18, items:[
+      { name:'Altes Mofa', icon:'🛵', price:800 },
+      { name:'Gebrauchtwagen', icon:'🚗', price:6000 },
+      { name:'Kompaktwagen', icon:'🚕', price:16000 },
+      { name:'Neuwagen', icon:'🚙', price:28000 },
+      { name:'Geländewagen', icon:'🚙', price:55000 },
+      { name:'Sportwagen', icon:'🏎️', price:85000 },
+      { name:'Luxuslimousine', icon:'🚘', price:150000 },
+      { name:'Oldtimer', icon:'🚗', price:220000 },
+      { name:'Supersportwagen', icon:'🏎️', price:450000 },
+    ]},
+    boote:{ license:'boot', licenseMinAge:16, items:[
+      { name:'Kanu', icon:'🛶', price:400 },
+      { name:'Schlauchboot', icon:'🚤', price:3000 },
+      { name:'Angelboot', icon:'🚤', price:9000 },
+      { name:'Segelboot', icon:'⛵', price:25000 },
+      { name:'Motoryacht', icon:'🛥️', price:600000 },
+      { name:'Yacht', icon:'🛥️', price:2500000 },
+      { name:'Superyacht', icon:'🛳️', price:15000000 },
+    ]},
+    flugzeuge:{ license:'flugzeug', licenseMinAge:18, items:[
+      { name:'Ultraleichtflugzeug', icon:'🛩️', price:120000 },
+      { name:'Kleinflugzeug', icon:'🛩️', price:350000 },
+      { name:'Hubschrauber', icon:'🚁', price:1800000 },
+      { name:'Privatjet', icon:'✈️', price:12000000 },
+      { name:'Großraumjet', icon:'✈️', price:45000000 },
+    ]},
+    immobilien:{ license:null, items:[
+      { name:'Studio-Apartment', icon:'🏢', price:60000 },
+      { name:'Kleine Wohnung', icon:'🏢', price:120000 },
+      { name:'Reihenhaus', icon:'🏘️', price:220000 },
+      { name:'Einfamilienhaus', icon:'🏠', price:320000 },
+      { name:'Penthouse', icon:'🏙️', price:850000 },
+      { name:'Villa', icon:'🏰', price:1200000 },
+      { name:'Anwesen', icon:'🏛️', price:5000000 },
+      { name:'Schloss', icon:'🏯', price:18000000 },
+    ]},
+    schmuck:{ license:null, items:[
+      { name:'Silberkette', icon:'📿', price:200 },
+      { name:'Goldkette', icon:'📿', price:800 },
+      { name:'Ohrringe', icon:'💎', price:1500 },
+      { name:'Diamantring', icon:'💍', price:5000 },
+      { name:'Luxusuhr', icon:'⌚', price:15000 },
+      { name:'Diamant-Collier', icon:'💎', price:60000 },
+      { name:'Krone mit Edelsteinen', icon:'👑', price:400000 },
+    ]},
+    luxus:{ license:null, items:[
+      { name:'Designer-Sonnenbrille', icon:'🕶️', price:600 },
+      { name:'Designerhandtasche', icon:'👜', price:3000 },
+      { name:'Maßanzug', icon:'🥼', price:5000 },
+      { name:'Weinsammlung', icon:'🍷', price:12000 },
+      { name:'Kunstwerk', icon:'🖼️', price:50000 },
+      { name:'Privatjet-Hangar', icon:'🏗️', price:2000000 },
+      { name:'Privatinsel', icon:'🏝️', price:20000000 },
+    ]},
+  };
+  const petShop = [
+    { name:'Goldfisch', icon:'🐠', price:20 }, { name:'Hamster', icon:'🐹', price:50 },
+    { name:'Katze', icon:'🐱', price:150 }, { name:'Hund', icon:'🐶', price:250 },
+    { name:'Papagei', icon:'🦜', price:400 }, { name:'Pferd', icon:'🐴', price:5000 },
+  ];
+  const socialPlatforms = [
+    { id:'tiktok', label:'TikTok', icon:'🎵', minAge:13, posts:[
+      { label:'Trend-Video posten', desc:'Kurzes virales Format', base:[4,22], viralChance:0.05, viralMult:[6,16] },
+      { label:'Comedy-Skit posten', desc:'Humor kommt an, ist aber riskant', base:[3,16], viralChance:0.03, viralMult:[4,12] },
+    ]},
+    { id:'instagram', label:'Instagram', icon:'📷', minAge:13, posts:[
+      { label:'Foto posten', desc:'Wirkung hängt von deinem Aussehen ab', base:[3,18], viralChance:0.04, viralMult:[5,12], looksWeighted:true },
+      { label:'Story teilen', desc:'Kleine, verlässliche Reichweite', base:[1,8], viralChance:0.01, viralMult:[2,5] },
+    ]},
+    { id:'youtube', label:'YouTube', icon:'▶️', minAge:13, posts:[
+      { label:'Video hochladen', desc:'Dauert länger, wächst aber stetig', base:[2,14], viralChance:0.03, viralMult:[5,14] },
+      { label:'Livestream starten', desc:'Direkter Kontakt zu Fans', base:[1,9], viralChance:0.02, viralMult:[3,8] },
+    ]},
+    { id:'twitter', label:'X (Twitter)', icon:'🐦', minAge:13, posts:[
+      { label:'Kurznachricht posten', desc:'Schnell, aber Shitstorm-Risiko', base:[2,12], viralChance:0.03, viralMult:[4,10], hateRisk:0.08 },
+      { label:'Thread schreiben', desc:'Profitiert von Intelligenz', base:[1,10], viralChance:0.015, viralMult:[3,8], smartsWeighted:true },
+    ]},
+    { id:'twitch', label:'Twitch', icon:'🎮', minAge:15, posts:[
+      { label:'Stream starten', desc:'Baut treue Stammzuschauer auf', base:[1,10], viralChance:0.015, viralMult:[3,7] },
+    ]},
+    { id:'fanpage', label:'Fanplattform', icon:'💌', minAge:18, posts:[
+      { label:'Exklusiven Inhalt posten', desc:'Direktes Einkommen, aber Risiko für dein Wohlbefinden', base:[1,6], viralChance:0.008, viralMult:[2,4], directIncome:true, happinessRisk:true },
+    ]},
+  ];
+  function totalFollowers(){ return Object.values(player.social.platforms||{}).reduce((a,b)=>a+b,0); }
+
+  const licenseQuiz = {
+    auto:[
+      { q:'Was bedeutet eine durchgezogene Linie auf der Straße?', options:['Überholen erlaubt','Überholen verboten','Nur Parken erlaubt'], correct:1 },
+      { q:'Wie verhältst du dich bei Rotlicht an der Ampel?', options:['Anhalten','Vorsichtig weiterfahren','Hupen und durchfahren'], correct:0 },
+      { q:'Was ist die Vorfahrtsregel ohne Schilder an einer Kreuzung?', options:['Wer zuerst da ist','Rechts vor links','Der schnellere Wagen'], correct:1 },
+      { q:'Wofür steht der Sicherheitsabstand auf der Autobahn?', options:['Reaktions- und Bremsweg','Nur Optik','Spart Sprit'], correct:0 },
+      { q:'Was bedeutet ein rundes Schild mit rotem Rand meistens?', options:['Hinweis','Verbot','Gebot'], correct:1 },
+    ],
+    boot:[
+      { q:'Welche Seite zeigt das rote Positionslicht an einem Boot an?', options:['Backbord (links)','Steuerbord (rechts)','Heck'], correct:0 },
+      { q:'Was bedeutet ein weißes Rundumlicht am Mast eines Bootes nachts?', options:['Ankerlicht','Fahrlicht','Notlicht'], correct:0 },
+      { q:'Wer hat auf dem Wasser meist Vorfahrt gegenüber Motorbooten?', options:['Segelboote','Jetskis','Frachtschiffe'], correct:0 },
+      { q:'Was tust du zuerst bei Mann-über-Bord?', options:['Kurs beibehalten','Sofort Rettungsring werfen und wenden','Warten'], correct:1 },
+    ],
+    flugzeug:[
+      { q:'Was zeigt der Höhenmesser im Cockpit an?', options:['Geschwindigkeit','Flughöhe','Treibstoff'], correct:1 },
+      { q:'Was bedeutet der Begriff "Stall" in der Luftfahrt?', options:['Strömungsabriss','Motorschaden','Landung'], correct:0 },
+      { q:'Wozu dient der Steig- und Sinkanzeiger?', options:['Anzeige der Vertikalgeschwindigkeit','Anzeige der Außentemperatur','Anzeige des Kraftstoffs'], correct:0 },
+      { q:'Was ist vor jedem Flug zwingend durchzuführen?', options:['Preflight-Check','Nur Tanken','Nichts Besonderes'], correct:0 },
+    ],
+  };
+
+  /* ================= STATE ================= */
+  let player = null;
+  let pendingEvent = null;
+  let forceRoyalNext = false;
+
+  /* ================= PERSISTENZ ================= */
+  const SAVE_KEY = 'lebensweg_save_v1';
+  const META_KEY = 'lebensweg_meta_v1';
+  let meta = { livesPlayed:0, achievements:[] };
+
+  async function saveGame(){
+    if(!player || !player.alive) return;
+    try{ await window.storage.set(SAVE_KEY, JSON.stringify({player, forceRoyalNext}), false); }catch(e){}
+  }
+  async function clearSave(){
+    try{ await window.storage.delete(SAVE_KEY, false); }catch(e){}
+  }
+  async function saveMeta(){
+    try{ await window.storage.set(META_KEY, JSON.stringify(meta), false); }catch(e){}
+  }
+  async function loadMeta(){
+    try{
+      const res = await window.storage.get(META_KEY, false);
+      if(res && res.value) meta = JSON.parse(res.value);
+    }catch(e){}
+  }
+  async function tryLoadSave(){
+    try{
+      const res = await window.storage.get(SAVE_KEY, false);
+      if(res && res.value){
+        const data = JSON.parse(res.value);
+        if(data.player && data.player.alive){
+          document.getElementById('create-continue-wrap').style.display='block';
+          document.getElementById('btn-continue').addEventListener('click', ()=>{
+            player = data.player; forceRoyalNext = data.forceRoyalNext||false;
+            rebuildFeedFromLog();
+            elCreate.style.display='none'; elGame.style.display='flex';
+            renderHeader();
+          });
+        }
+      }
+    }catch(e){}
+  }
+  function rebuildFeedFromLog(){
+    const feed=document.getElementById('feed'); feed.innerHTML='';
+    player.log.forEach(entry=>{
+      const row=document.createElement('div');
+      row.className='log-entry '+(entry.tone||'');
+      row.innerHTML=`<div class="log-icon">${entry.icon}</div><div><div class="log-text">${entry.text}</div><div class="log-age">Alter ${entry.age}</div></div>`;
+      feed.prepend(row);
+    });
+  }
+
+  function newPlayer(first,last,gender,country,city,avatar){
+    return {
+      first,last,gender,country,city,avatar, age:0, alive:true, causeOfDeath:null,
+      stats:{ health:rnd(55,80), happiness:rnd(55,80), smarts:rnd(35,60), looks:rnd(35,65), fitness:rnd(35,65), fame:0 },
+      money:0, savings:0, loan:null, stocks:{shares:0, avgPrice:0}, crypto:{coins:0, avgPrice:0},
+      pension:0, job:null, business:null, military:{active:false, rank:0, years:0},
+      careerUnlocks:{ saenger:false, schauspieler:false, sportler:false, influencer:false },
+      education:{ stage:0, training:false, trainingType:null, trainingName:null, yearsLeft:0, degree:null, ausbildung:null, abschluss:null, grade:null },
+      relationships:[], npcs:[], datingId:null, pets:[], assets:[], licenses:{auto:false,boot:false,flugzeug:false},
+      social:{ platforms:{ tiktok:0, instagram:0, youtube:0, twitter:0, twitch:0, fanpage:0 } },
+      royal:false, royalTitle:null, traits:[],
+      prisonYearsLeft:0, totalPrisonYears:0, divorceCount:0, jobsHeld:[], log:[], yearActions:{}
+    };
+  }
+  function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function fmtMoney(n){ return Math.round(n).toLocaleString('de-DE')+' €'; }
+  function clamp(v){ return Math.max(0,Math.min(100,Math.round(v))); }
+  function randomName(gender){ return pick(gender==='weiblich'?namesF:namesM); }
+
+  /* ================= CREATION SCREEN ================= */
+  const elCreate = document.getElementById('screen-create');
+  const elGame = document.getElementById('screen-game');
+  let creationGender='weiblich';
+  let creationAvatar = randomAvatar('weiblich');
+
+  let selectedCountry='Deutschland', selectedCity=countryData['Deutschland'][0];
+  const countryPanel = document.getElementById('country-picker');
+  const cityPanel = document.getElementById('city-picker');
+  function renderCountryPicker(){
+    countryPanel.innerHTML='';
+    countries.forEach(c=>{
+      const b=document.createElement('button'); b.className='picker-item'+(c===selectedCountry?' active':''); b.textContent=c;
+      b.addEventListener('click', ()=>{
+        selectedCountry=c; document.getElementById('country-label').textContent=c;
+        selectedCity = countryData[c][0]; document.getElementById('city-label').textContent=selectedCity;
+        countryPanel.classList.remove('open');
+        updateSummary();
+      });
+      countryPanel.appendChild(b);
+    });
+  }
+  function renderCityPicker(){
+    cityPanel.innerHTML='';
+    countryData[selectedCountry].forEach(city=>{
+      const b=document.createElement('button'); b.className='picker-item'+(city===selectedCity?' active':''); b.textContent=city;
+      b.addEventListener('click', ()=>{
+        selectedCity=city; document.getElementById('city-label').textContent=city;
+        cityPanel.classList.remove('open');
+        updateSummary();
+      });
+      cityPanel.appendChild(b);
+    });
+  }
+  document.getElementById('btn-country').addEventListener('click', ()=>{
+    renderCountryPicker(); countryPanel.classList.toggle('open'); cityPanel.classList.remove('open');
+    if(countryPanel.classList.contains('open')) countryPanel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+  document.getElementById('btn-city').addEventListener('click', ()=>{
+    renderCityPicker(); cityPanel.classList.toggle('open'); countryPanel.classList.remove('open');
+    if(cityPanel.classList.contains('open')) cityPanel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+  function updateSummary(){}
+  renderCountryPicker(); renderCityPicker();
+
+  function updateFacialVisibility(){
+    const show = creationGender==='männlich';
+    document.getElementById('facial-label').style.display = show?'block':'none';
+    document.getElementById('seg-facial').style.display = show?'flex':'none';
+    if(!show){ creationAvatar.facial='keiner'; }
+  }
+  function buildHairstyles(){
+    const c = document.getElementById('seg-hairstyle');
+    c.innerHTML='';
+    const styles = hairstylesByGender[creationGender];
+    if(!styles.includes(creationAvatar.hairStyle)) creationAvatar.hairStyle = styles[0];
+    styles.forEach(style=>{
+      const b=document.createElement('button');
+      b.textContent = hairstyleLabels[style];
+      b.dataset.v = style;
+      if(style===creationAvatar.hairStyle) b.classList.add('active');
+      b.addEventListener('click', ()=>{
+        document.querySelectorAll('#seg-hairstyle button').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active'); creationAvatar.hairStyle=style; renderAvatarPreview();
+      });
+      c.appendChild(b);
+    });
+  }
+  document.querySelectorAll('#seg-gender button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#seg-gender button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); creationGender=b.dataset.v; creationAvatar.gender=creationGender; updateFacialVisibility(); buildHairstyles(); renderAvatarPreview();
+    });
+  });
+  document.querySelector('#seg-gender button').classList.add('active');
+
+  function buildSwatches(containerId, colors, key){
+    const c = document.getElementById(containerId);
+    c.innerHTML='';
+    colors.forEach(col=>{
+      const s=document.createElement('button');
+      s.className='swatch'+(creationAvatar[key]===col?' active':'');
+      s.style.background=col;
+      s.addEventListener('click', ()=>{ creationAvatar[key]=col; buildSwatches(containerId,colors,key); renderAvatarPreview(); });
+      c.appendChild(s);
+    });
+  }
+  buildSwatches('sw-skin', skinTones, 'skin');
+  buildSwatches('sw-hair', hairColors, 'hair');
+  buildSwatches('sw-eyes', eyeColors, 'eyes');
+  buildSwatches('sw-outfit', outfitColors, 'outfit');
+  buildHairstyles();
+
+  document.querySelectorAll('#seg-facial button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#seg-facial button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); creationAvatar.facial=b.dataset.v; renderAvatarPreview();
+    });
+  });
+  document.getElementById('glasses-toggle').addEventListener('click', ()=>{
+    creationAvatar.glasses = !creationAvatar.glasses;
+    document.getElementById('glasses-toggle').classList.toggle('on', creationAvatar.glasses);
+    renderAvatarPreview();
+  });
+  document.querySelector('#seg-facial button').classList.add('active');
+  updateFacialVisibility();
+
+  function renderAvatarPreview(){
+    const wrap = document.getElementById('avatar-preview-wrap');
+    wrap.innerHTML = `<div style="width:128px;height:128px;border-radius:50%;background:var(--surface);border:var(--border);overflow:hidden;box-shadow:var(--shadow); margin:0 auto;">${avatarSVG(creationAvatar)}</div>`;
+    const first = document.getElementById('in-first').value.trim();
+    const last = document.getElementById('in-last').value.trim();
+    document.getElementById('avatar-preview-name').textContent = (first||last) ? (first+' '+last).trim() : 'Dein Charakter';
+  }
+  document.getElementById('in-first').addEventListener('input', renderAvatarPreview);
+  document.getElementById('in-last').addEventListener('input', renderAvatarPreview);
+  renderAvatarPreview();
+
+  document.getElementById('btn-random-all').addEventListener('click', ()=>{
+    const g = pick(['weiblich','männlich']);
+    creationGender = g;
+    document.querySelectorAll('#seg-gender button').forEach(x=> x.classList.toggle('active', x.dataset.v===g));
+    document.getElementById('in-first').value = randomName(g);
+    document.getElementById('in-last').value = pick(lastNames);
+    selectedCountry = pick(countries); selectedCity = pick(countryData[selectedCountry]);
+    document.getElementById('country-label').textContent = selectedCountry;
+    document.getElementById('city-label').textContent = selectedCity;
+    renderCountryPicker(); renderCityPicker();
+    creationAvatar = randomAvatar(g);
+    buildSwatches('sw-skin', skinTones, 'skin'); buildSwatches('sw-hair', hairColors, 'hair');
+    buildSwatches('sw-eyes', eyeColors, 'eyes'); buildSwatches('sw-outfit', outfitColors, 'outfit');
+    buildHairstyles();
+    document.querySelectorAll('#seg-facial button').forEach(x=> x.classList.toggle('active', x.dataset.v===creationAvatar.facial));
+    document.getElementById('glasses-toggle').classList.toggle('on', creationAvatar.glasses);
+    updateFacialVisibility();
+    renderAvatarPreview();
+  });
+
+  document.getElementById('btn-start').addEventListener('click', ()=>{
+    const first = document.getElementById('in-first').value.trim() || randomName(creationGender);
+    const last = document.getElementById('in-last').value.trim() || pick(lastNames);
+    startGame(first,last,creationGender,selectedCountry,selectedCity,{...creationAvatar});
+  });
+
+  function startGame(first,last,gender,country,city,avatar){
+    player = newPlayer(first,last,gender,country,city,avatar);
+    const mother = { id:'mutter', name:randomName('weiblich')+' '+last, type:'Mutter', avatar:randomAvatar('weiblich'), relationship:rnd(55,90), alive:true };
+    const father = { id:'vater', name:randomName('männlich')+' '+last, type:'Vater', avatar:randomAvatar('männlich'), relationship:rnd(55,90), alive:true };
+    player.relationships.push(mother, father);
+    if(Math.random()<0.5){
+      const sg=pick(['weiblich','männlich']);
+      player.relationships.push({ id:'geschwister', name:randomName(sg)+' '+last, type:'Geschwister', avatar:randomAvatar(sg), relationship:rnd(40,85), alive:true });
+    }
+    if(forceRoyalNext || Math.random()<0.02){
+      player.royal = true;
+      player.royalTitle = player.gender==='weiblich' ? 'Prinzessin von '+player.country : 'Prinz von '+player.country;
+      player.money += 5000000;
+      player.stats.fame = 20;
+      addLog('👑', `${first} ${last} wird als ${player.royalTitle} geboren! Ein Leben in Reichtum beginnt.`, 'good');
+      forceRoyalNext = false;
+    } else {
+      const roll = Math.random();
+      if(roll<0.03){
+        player.traits.push('Millionärsfamilie'); player.money += 60000;
+        addLog('💎', 'Du wirst in eine wohlhabende Familie geboren.', 'good');
+      } else if(roll<0.10){
+        player.traits.push('Einfache Verhältnisse'); addStat('happiness',-4);
+        addLog('🏚️', 'Deine Familie hat es finanziell nicht leicht.', '');
+      }
+      if(Math.random()<0.05){
+        player.traits.push('Genie'); addStat('smarts',20);
+        addLog('🧠', 'Schon als Baby fällst du durch außergewöhnliche Aufmerksamkeit auf — ein echtes Genie.', 'good');
+      }
+      if(Math.random()<0.06){
+        const talentStat = pick(['looks','fitness','happiness']);
+        addStat(talentStat, 15); player.traits.push('Naturtalent');
+        addLog('🌟', 'Du zeigst schon früh ein besonderes Naturtalent.', 'good');
+      }
+      if(Math.random()<0.03){
+        const tg = pick(['weiblich','männlich']);
+        player.relationships.push({ id:'zwilling', name:randomName(tg)+' '+last, type:'Zwilling', avatar:randomAvatar(tg), relationship:rnd(60,95), alive:true });
+        player.traits.push('Zwilling');
+        addLog('👯', 'Du kommst gemeinsam mit einem Zwilling zur Welt!', 'good');
+      }
+    }
+    addLog('👶', `${first} ${last} wird in ${city}, ${country} geboren!`, 'good');
+    elCreate.style.display='none'; elGame.style.display='flex';
+    renderAll();
+  }
+
+  /* ================= LOGGING ================= */
+  function addLog(icon,text,tone){
+    player.log.push({icon,text,age:player.age,tone:tone||''});
+    const feed=document.getElementById('feed');
+    const row=document.createElement('div');
+    row.className='log-entry '+(tone||'');
+    row.innerHTML=`<div class="log-icon">${icon}</div><div><div class="log-text">${text}</div><div class="log-age">Alter ${player.age}</div></div>`;
+    feed.prepend(row);
+    feed.scrollTop = 0;
+    if(tone==='good') sfx.good(); if(tone==='bad') sfx.bad();
+  }
+
+  /* ================= RENDER ================= */
+  function eduLabel(){
+    const e=player.education;
+    if(e.training) return (e.trainingType==='studium'?'Studium':'Ausbildung')+': '+e.trainingName+' ('+e.yearsLeft+' Jahre übrig)';
+    if(e.degree) return 'Studienabschluss: '+e.degree;
+    if(e.ausbildung) return 'Ausbildung: '+e.ausbildung;
+    if(e.stage===0) return 'Vorschulalter';
+    if(e.stage===1) return 'Grundschule';
+    if(e.stage===2) return 'Mittelstufe';
+    if(e.abschluss) return e.abschluss;
+    return 'Ohne Abschluss';
+  }
+  function jobLabel(){
+    if(player.job) return player.job.title;
+    if(player.military.active) return militaryRanks[player.military.rank].title+' (Militär)';
+    if(player.business) return 'Selbstständig (Firma Stufe '+player.business.level+')';
+    if(player.pension>0) return 'Rentner/in';
+    return eduLabel();
+  }
+
+  function renderHeader(){
+    document.getElementById('p-avatar').innerHTML = avatarSVG(player.alive?player.avatar:{...player.avatar, skin:'#ccc'});
+    document.getElementById('p-name').textContent = player.first+' '+player.last;
+    document.getElementById('p-sub').textContent = jobLabel();
+    document.getElementById('p-money').textContent = fmtMoney(player.money);
+    const dockLabel = document.getElementById('dock-label-bildung');
+    if(dockLabel) dockLabel.textContent = jobLabel();
+    const badges = document.getElementById('p-badges');
+    badges.innerHTML='';
+    if(player.royal) badges.innerHTML += `<span class="badge">👑 ${player.royalTitle}</span>`;
+    if(player.stats.fame>=50) badges.innerHTML += `<span class="badge">⭐ Promi</span>`;
+    ['health','happiness','smarts','looks'].forEach(k=>{
+      document.getElementById('v-'+k).textContent = player.stats[k];
+      document.getElementById('b-'+k).style.width = player.stats[k]+'%';
+    });
+    const btn=document.getElementById('ageup-btn'), flee=document.getElementById('flee-btn');
+    if(player.prisonYearsLeft>0){
+      btn.textContent = '⛓️ Im Gefängnis ('+player.prisonYearsLeft+' Jahre übrig) — Zeit absitzen';
+      btn.classList.add('prison'); flee.style.display='block';
+    } else {
+      btn.textContent = '🎂 Ein Jahr älter werden';
+      btn.classList.remove('prison'); flee.style.display='none';
+    }
+    saveGame();
+    checkAchievements();
+  }
+  function renderAll(){ renderHeader(); }
+  function addStat(key,amount){ if(key==='fame'){ player.stats.fame=Math.max(0,player.stats.fame+amount); return;} player.stats[key]=clamp(player.stats[key]+amount); }
+  function addMoney(amount){ player.money += amount; if(amount>0) sfx.money(); }
+  function useAction(key, maxPerYear){
+    if(!player.yearActions) player.yearActions={};
+    const used = player.yearActions[key]||0;
+    if(used>=maxPerYear) return false;
+    player.yearActions[key]=used+1;
+    return true;
+  }
+  function actionsLeft(key, maxPerYear){
+    if(!player.yearActions) player.yearActions={};
+    return maxPerYear - (player.yearActions[key]||0);
+  }
+
+  /* ================= AGE UP ================= */
+  document.getElementById('ageup-btn').addEventListener('click', ageUp);
+  document.getElementById('flee-btn').addEventListener('click', ()=>{
+    if(pendingEvent) return;
+    const ev = { icon:'🏃', text:()=>'Wie versuchst du zu fliehen?', choices:[
+      { label:'Nachts über den Zaun klettern', result:'Du wartest auf Dunkelheit und wagst den Sprung.', effects:{}, custom:()=>{ attemptEscape(0.35, 1); } },
+      { label:'Wache bestechen (-3.000€)', result:'Du steckst der Wache heimlich Geld zu.', effects:{}, custom:()=>{
+          if(player.money<3000){ addLog('💸','Nicht genug Geld, um die Wache zu bestechen.','bad'); return; }
+          addMoney(-3000); attemptEscape(0.55, 2);
+        }},
+      { label:'Tunnel graben', result:'Nacht für Nacht gräbst du heimlich weiter.', effects:{}, custom:()=>{ attemptEscape(0.20, 0); } },
+    ]};
+    showEventChoice(ev);
+  });
+  function attemptEscape(chance, failPenaltyYears){
+    if(Math.random()<chance){
+      player.prisonYearsLeft=0; addStat('happiness',8);
+      addLog('🏃','Geglückte Flucht! Du bist wieder frei.', 'good');
+    } else {
+      player.prisonYearsLeft += failPenaltyYears; player.totalPrisonYears += failPenaltyYears;
+      addStat('happiness',-10);
+      addLog('🚨', failPenaltyYears>0 ? `Der Fluchtversuch scheitert. Strafe +${failPenaltyYears} Jahr(e).` : 'Der Fluchtversuch scheitert — aber deine Strafe bleibt unverändert.', 'bad');
+    }
+    renderHeader();
+  }
+
+  function ageUp(){
+    if(!player.alive || pendingEvent) return;
+    sfx.ageup();
+    player.age += 1;
+    player.yearActions = {};
+
+    if(player.prisonYearsLeft>0){
+      player.prisonYearsLeft -= 1;
+      addLog('⛓️','Ein weiteres Jahr im Gefängnis vergeht.', 'bad');
+      addStat('happiness',-3);
+      if(player.prisonYearsLeft===0) addLog('🔓','Du wirst aus dem Gefängnis entlassen.', 'good');
+      renderAll(); checkDeath(); return;
+    }
+
+    if(player.age>55) addStat('health',-rnd(1,3));
+    if(player.age>75) addStat('health',-rnd(1,2));
+    addStat('happiness', rnd(-2,2));
+
+    handleEducation();
+    handleCareerContexts();
+    handleIncome();
+    tickFamily();
+    tickNpcs();
+    tickPets();
+    tickSocialMedia();
+    tickFinances();
+    tickAssets();
+    tickBusiness();
+
+    triggerRandomEvent();
+    renderHeader();
+    checkDeath();
+  }
+
+  function handleIncome(){
+    if(player.age>=67 && (player.job || player.military.active)){
+      const lastSalary = player.job ? player.job.salary : militaryRanks[player.military.rank].salary;
+      player.pension = Math.round(lastSalary*0.4);
+      addLog('🏖️', `Du gehst als ${jobLabel()} in Rente.`, 'good');
+      if(player.job){ player.jobsHeld.push(player.job.title); player.job=null; }
+      player.military.active=false;
+    }
+    if(player.job){
+      let income = player.job.salary;
+      if(player.job.special){
+        const sc = specialCareers.find(s=>s.id===player.job.special);
+        income = rnd(sc.incomeMin, sc.incomeMax);
+        addStat('fame', rnd(1,sc.minFameBoost));
+      }
+      addMoney(income);
+      addLog('💶', `Du erhältst dein Jahreseinkommen als ${player.job.title}: ${fmtMoney(income)}.`, 'good');
+      if(!player.job.special){
+        if(Math.random()<0.08){ player.job.salary=Math.round(player.job.salary*1.15); addLog('📈', `Beförderung! Gehalt steigt auf ${fmtMoney(player.job.salary)}.`, 'good'); }
+        else if(Math.random()<0.04){ addLog('📉', `Du wurdest als ${player.job.title} entlassen.`, 'bad'); player.job=null; }
+      }
+    } else if(player.military.active){
+      player.military.years += 1;
+      const rank = militaryRanks[player.military.rank];
+      addMoney(rank.salary);
+      addLog('🎖️', `Militärsold als ${rank.title}: ${fmtMoney(rank.salary)}.`, 'good');
+      if(player.military.years>=rank.minYears && player.military.rank<militaryRanks.length-1 && Math.random()<0.5){
+        player.military.rank += 1; player.military.years=0;
+        addLog('🎖️', `Beförderung im Militär zum ${militaryRanks[player.military.rank].title}!`, 'good');
+      }
+    } else if(player.pension>0){
+      addMoney(player.pension);
+      addLog('🏦', `Deine Rente wird ausgezahlt: ${fmtMoney(player.pension)}.`, 'good');
+    }
+  }
+
+  function handleEducation(){
+    const e=player.education;
+    if(e.training){
+      e.yearsLeft -= 1;
+      if(e.yearsLeft<=0){
+        e.training=false;
+        if(e.trainingType==='studium') e.degree=e.trainingName; else e.ausbildung=e.trainingName;
+        addStat('smarts', e.trainingType==='studium'?12:6);
+        addLog('🎓', `Abschluss geschafft: ${e.trainingName}!`, 'good');
+      } else { addStat('smarts', e.trainingType==='studium'?3:2); }
+      return;
+    }
+    if(player.age===6){ e.stage=1; addLog('🏫','Du kommst in die Grundschule.', ''); }
+    else if(player.age===10){ e.stage=2; addLog('🏫','Du wechselst in die Mittelstufe.', ''); }
+    else if(player.age===16 && e.stage===2){
+      e.stage=3;
+      e.abschluss = player.stats.smarts>=55 ? 'Abitur' : player.stats.smarts>=30 ? 'Realschulabschluss' : 'Hauptschulabschluss';
+      addLog('🎓', `Du machst deinen Schulabschluss: ${e.abschluss}.`, 'good');
+    }
+    else if(e.stage===1 || e.stage===2){ addStat('smarts', rnd(1,3)); }
+  }
+
+  function handleCareerContexts(){
+    const e=player.education;
+    if(e.stage===1 || e.stage===2){ ensureCircle('schule', 5); }
+    else if(e.training && e.trainingType==='studium'){ ensureCircle('uni', 5); }
+    else { player.npcs = player.npcs.filter(n=> n.context!=='schule' && n.context!=='uni'); }
+    if(player.job || player.military.active){ ensureCircle('arbeit', 4, true); }
+  }
+  function ensureCircle(context, count, refreshOnJobChange){
+    const existing = player.npcs.filter(n=>n.context===context && n.alive);
+    if(context==='arbeit'){
+      const jobKey = player.job ? player.job.title : (player.military.active?'Militär':null);
+      const stale = player.npcs.find(n=>n.context==='arbeit' && n._jobKey!==jobKey);
+      if(stale){ player.npcs = player.npcs.filter(n=>n.context!=='arbeit'); }
+    }
+    const stillExisting = player.npcs.filter(n=>n.context===context && n.alive);
+    if(stillExisting.length>=count) return;
+    const jobKey = player.job ? player.job.title : (player.military.active?'Militär':null);
+    for(let i=stillExisting.length;i<count;i++){
+      const g=pick(['weiblich','männlich']);
+      const typeLabel = context==='schule'?'Mitschüler/in':context==='uni'?'Kommiliton/in':'Kolleg/in';
+      player.npcs.push({ id:context+'_'+Date.now()+'_'+i, name:randomName(g)+' '+pick(lastNames), gender:g, avatar:randomAvatar(g),
+        relationship:rnd(15,40), context, baseType:typeLabel, alive:true, isSpouse:false, _jobKey:jobKey });
+    }
+  }
+  function tickFamily(){
+    player.relationships.forEach(r=>{
+      if(!r.alive) return;
+      r.relationship = clamp(r.relationship + rnd(-2,2));
+      if((r.type==='Mutter'||r.type==='Vater') && player.age>45 && Math.random()<0.01*(player.age-45)){
+        r.alive=false; addLog('🕯️', `Deine ${r.type} ${r.name} ist verstorben.`, 'bad'); addStat('happiness',-15);
+      }
+    });
+  }
+  function tickNpcs(){
+    if(Math.random()<0.16 && player.npcs.filter(n=>n.context==='zufall'&&n.alive).length<8){
+      const g=pick(['weiblich','männlich']);
+      player.npcs.push({ id:'zufall_'+Date.now(), name:randomName(g)+' '+pick(lastNames), gender:g, avatar:randomAvatar(g),
+        relationship:rnd(10,30), context:'zufall', baseType:'Bekannte/r', alive:true, isSpouse:false });
+      addLog('🙋', 'Du lernst zufällig eine neue Person kennen.', 'good');
+    }
+    player.npcs.forEach(n=>{
+      if(!n.alive || n.isSpouse) return;
+      n.relationship = clamp(n.relationship + rnd(-3,2));
+      if(n.relationship<=3 && Math.random()<0.35){ n.alive=false; }
+    });
+  }
+  function tickPets(){
+    player.pets.forEach(p=>{
+      if(!p.alive) return;
+      p.happiness = clamp(p.happiness + rnd(-4,1));
+      if(Math.random()<0.02+player.age*0.0002){ p.alive=false; addLog('🕯️', `Dein Haustier ${p.name} ist gestorben.`, 'bad'); addStat('happiness',-8); }
+    });
+  }
+  function tickSocialMedia(){
+    const total = totalFollowers();
+    if(total>2000){
+      const income = Math.floor(total/2000)*rnd(30,120);
+      addMoney(income);
+      addLog('📱', `Werbeeinnahmen durch Social Media: ${fmtMoney(income)}.`, 'good');
+    }
+  }
+  function tickFinances(){
+    if(player.savings>0){
+      const zins = Math.round(player.savings*0.03);
+      player.savings += zins;
+      if(zins>0) addLog('🏦', `Zinsen auf dein Sparkonto: +${fmtMoney(zins)}.`, 'good');
+    }
+    if(player.loan){
+      if(player.money>=player.loan.yearlyPayment){
+        addMoney(-player.loan.yearlyPayment);
+        player.loan.yearsLeft -= 1;
+        addLog('💳', `Kreditrate bezahlt: -${fmtMoney(player.loan.yearlyPayment)}.`, '');
+        if(player.loan.yearsLeft<=0){ addLog('✅','Dein Kredit ist vollständig abbezahlt!', 'good'); player.loan=null; }
+      } else {
+        addMoney(-player.money);
+        addStat('happiness',-6);
+        addLog('⚠️','Du kannst deine Kreditrate nicht vollständig bezahlen.', 'bad');
+      }
+    }
+    if(player.stocks.shares>0){
+      const change = 1 + (Math.random()*0.4-0.2);
+      player.stocks.avgPrice = Math.max(1, Math.round(player.stocks.avgPrice*change));
+    }
+    if(player.crypto.coins>0){
+      const change = 1 + (Math.random()*0.8-0.4);
+      player.crypto.avgPrice = Math.max(1, Math.round(player.crypto.avgPrice*change));
+    }
+    if(player.money < -3000){
+      addLog('📉', 'Deine Schulden wachsen dir über den Kopf — Insolvenz!', 'bad');
+      player.loan=null; player.savings=0; player._everBankrupt=true;
+      if(player.assets.length>0){ player.assets.splice(0, Math.ceil(player.assets.length/2)); addLog('📦','Ein Teil deines Besitzes wird gepfändet.', 'bad'); }
+      player.money=0; addStat('happiness',-20);
+    }
+  }
+  function ownsVehicle(){
+    return player.assets.some(a=> marketCats.fahrzeuge.items.some(i=>i.name===a.name) || marketCats.boote.items.some(i=>i.name===a.name) || marketCats.flugzeuge.items.some(i=>i.name===a.name));
+  }
+  function tickAssets(){
+    const vehicles = player.assets.filter(a=> marketCats.fahrzeuge.items.some(i=>i.name===a.name) || marketCats.boote.items.some(i=>i.name===a.name) || marketCats.flugzeuge.items.some(i=>i.name===a.name));
+    if(vehicles.length>0){
+      const upkeep = vehicles.length * rnd(400,1200);
+      addMoney(-upkeep);
+      addLog('⛽', `Fahrzeugkosten (Tanken, Versicherung, TÜV): -${fmtMoney(upkeep)}.`, '');
+    }
+    player.assets.forEach(a=>{
+      if(a.rented){ const income=Math.round(a.price*0.04); addMoney(income); addLog('🏠', `Mieteinnahmen von ${a.name}: +${fmtMoney(income)}.`, 'good'); }
+    });
+  }
+  function tickBusiness(){
+    if(!player.business) return;
+    const b=player.business;
+    const income = Math.round(b.level*rnd(-2000,15000));
+    addMoney(income);
+    if(income>=0) addLog('🏢', `Deine Firma erwirtschaftet: +${fmtMoney(income)}.`, 'good');
+    else addLog('🏢', `Deine Firma macht Verlust: ${fmtMoney(income)}.`, 'bad');
+    if(player.money<-2000 && Math.random()<0.2){
+      addLog('🏢','Deine Firma muss schließen — die Insolvenz war unausweichlich.', 'bad');
+      player.business=null;
+    }
+  }
+
+  function checkDeath(){
+    if(!player.alive) return;
+    let chance=0.001;
+    if(player.age>40) chance=0.004; if(player.age>60) chance=0.018; if(player.age>75) chance=0.05;
+    if(player.age>90) chance=0.16; if(player.age>100) chance=0.4;
+    if(player.stats.health<15) chance+=0.2;
+    if(player.stats.health<=0) chance=1;
+    if(player.age>=108) chance=1;
+    if(Math.random()<chance) die();
+  }
+  const causesOld=['ist im Schlaf friedlich eingeschlafen','ist an Altersschwäche gestorben','ist im Kreise der Familie verstorben'];
+  const causesIll=['ist an einer schweren Krankheit gestorben','erlag einem Herzinfarkt','starb an den Folgen einer Erkrankung'];
+  const causesAcc=['starb bei einem Autounfall','verunglückte tödlich','starb bei einem tragischen Unfall'];
+  function die(){
+    player.alive=false; sfx.death();
+    let pool = player.stats.health<=15 ? causesIll : player.age<50 ? causesAcc : causesOld;
+    player.causeOfDeath = pick(pool);
+    addLog('⚰️', `${player.first} ${player.last} ${player.causeOfDeath}. Im Alter von ${player.age} Jahren.`, 'bad');
+    meta.livesPlayed = (meta.livesPlayed||0)+1; saveMeta();
+    clearSave();
+    showObituary();
+  }
+  function showObituary(){
+    document.getElementById('obit-name').textContent = player.first+' '+player.last;
+    document.getElementById('obit-span').textContent = `0 – ${player.age} Jahre · ${player.city}, ${player.country}`;
+    document.getElementById('obit-cause').textContent = 'Todesursache: '+player.causeOfDeath;
+    const netWorth = player.money + player.assets.reduce((s,a)=>s+a.price,0);
+    const rows=[
+      ['Vermögen', fmtMoney(netWorth)],
+      ['Letzter Beruf', player.job?player.job.title:(player.jobsHeld[player.jobsHeld.length-1]||'Nie berufstätig')],
+      ['Bildung', eduLabel()],
+      ['Ruhm', player.stats.fame],
+      ['Vermögenswerte', player.assets.length],
+      ['Haustiere', player.pets.filter(p=>p.alive).length],
+    ];
+    document.getElementById('obit-stats').innerHTML = rows.map(r=>`<div class="obit-row"><span class="k">${r[0]}</span><span>${r[1]}</span></div>`).join('');
+    document.getElementById('obituary').classList.add('show');
+  }
+  document.getElementById('btn-restart').addEventListener('click', ()=>{
+    document.getElementById('obituary').classList.remove('show');
+    document.getElementById('feed').innerHTML='';
+    elGame.style.display='none'; elCreate.style.display='flex';
+    document.getElementById('in-first').value=''; document.getElementById('in-last').value='';
+    document.getElementById('create-continue-wrap').style.display='none';
+    renderAvatarPreview();
+  });
+
+  /* ================= ERFOLGE & STATISTIKEN ================= */
+  const achievementDefs = [
+    {id:'first_year', name:'Das Leben beginnt', desc:'Überlebe dein erstes Jahr.', icon:'👶', cond:()=> player.age>=1},
+    {id:'age18', name:'Volljährig', desc:'Werde 18 Jahre alt.', icon:'🎉', cond:()=> player.age>=18},
+    {id:'age65', name:'Ruhestand', desc:'Werde 65 Jahre alt.', icon:'🧓', cond:()=> player.age>=65},
+    {id:'age100', name:'Hundertjährig', desc:'Werde 100 Jahre alt.', icon:'🎂', cond:()=> player.age>=100},
+    {id:'millionaire', name:'Millionär', desc:'Besitze 1.000.000 €.', icon:'💰', cond:()=> player.money>=1000000},
+    {id:'multimillionaire', name:'Multimillionär', desc:'Besitze 10.000.000 €.', icon:'🤑', cond:()=> player.money>=10000000},
+    {id:'married', name:'Verheiratet', desc:'Heirate einen Partner.', icon:'💍', cond:()=> player.npcs.some(n=>n.isSpouse)},
+    {id:'parent', name:'Elternteil', desc:'Bekomme ein Kind.', icon:'🍼', cond:()=> player.relationships.some(r=>r.type==='Kind')},
+    {id:'ausbildung', name:'Facharbeiter/in', desc:'Schließe eine Ausbildung ab.', icon:'🔧', cond:()=> !!player.education.ausbildung},
+    {id:'studium', name:'Akademiker/in', desc:'Schließe ein Studium ab.', icon:'🎓', cond:()=> !!player.education.degree},
+    {id:'famous', name:'Berühmt', desc:'Erreiche 50 Ruhm.', icon:'⭐', cond:()=> player.stats.fame>=50},
+    {id:'superstar', name:'Weltstar', desc:'Erreiche 90 Ruhm.', icon:'🌟', cond:()=> player.stats.fame>=90},
+    {id:'royal', name:'Blaues Blut', desc:'Werde königlich geboren.', icon:'👑', cond:()=> player.royal},
+    {id:'military', name:'Im Dienst', desc:'Trete dem Militär bei.', icon:'🎖️', cond:()=> player.military.active || player.military.years>0},
+    {id:'criminal', name:'Auf die schiefe Bahn', desc:'Wandere ins Gefängnis.', icon:'⛓️', cond:()=> player.prisonYearsLeft>0 || player._everJailed},
+    {id:'petowner', name:'Tierfreund', desc:'Besitze ein Haustier.', icon:'🐶', cond:()=> player.pets.length>0},
+    {id:'realestate', name:'Immobilienbesitzer', desc:'Kaufe eine Immobilie.', icon:'🏠', cond:()=> player.assets.some(a=>['Kleine Wohnung','Einfamilienhaus','Villa','Anwesen'].includes(a.name))},
+    {id:'license', name:'Freie Fahrt', desc:'Bestehe eine Führerscheinprüfung.', icon:'📋', cond:()=> Object.values(player.licenses).some(v=>v)},
+    {id:'influencer', name:'Social-Media-Star', desc:'Erreiche 10.000 Follower.', icon:'📱', cond:()=> totalFollowers()>=10000},
+    {id:'entrepreneur', name:'Unternehmer/in', desc:'Gründe eine eigene Firma.', icon:'🏢', cond:()=> !!player.business},
+    {id:'investor', name:'Investor/in', desc:'Kaufe Aktien oder Kryptowährung.', icon:'📈', cond:()=> player.stocks.shares>0 || player.crypto.coins>0},
+    {id:'divorced', name:'Neuanfang', desc:'Lass dich scheiden.', icon:'📝', cond:()=> (player.divorceCount||0)>0},
+    {id:'wealthy_family', name:'Goldener Start', desc:'Werde in eine wohlhabende Familie geboren.', icon:'💎', cond:()=> player.traits.includes('Millionärsfamilie')},
+    {id:'genius', name:'Wunderkind', desc:'Komm als Genie zur Welt.', icon:'🧠', cond:()=> player.traits.includes('Genie')},
+    {id:'talent', name:'Naturtalent', desc:'Zeige schon früh ein besonderes Talent.', icon:'🌟', cond:()=> player.traits.includes('Naturtalent')},
+    {id:'twin', name:'Doppelpack', desc:'Komm als Zwilling zur Welt.', icon:'👯', cond:()=> player.traits.includes('Zwilling')},
+    {id:'license_boat', name:'Kapitän/in', desc:'Bestehe die Bootsführerscheinprüfung.', icon:'⛵', cond:()=> player.licenses.boot},
+    {id:'license_plane', name:'Höhenflug', desc:'Bestehe die Flugzeugführerscheinprüfung.', icon:'🛩️', cond:()=> player.licenses.flugzeug},
+    {id:'followers_100k', name:'Reichweite', desc:'Erreiche 100.000 Follower.', icon:'📲', cond:()=> totalFollowers()>=100000},
+    {id:'landlord', name:'Vermieter/in', desc:'Vermiete eine Immobilie.', icon:'🏠', cond:()=> player.assets.some(a=>a.rented)},
+    {id:'pensioner', name:'Wohlverdient', desc:'Gehe in Rente.', icon:'🏖️', cond:()=> player.pension>0},
+    {id:'top_earner', name:'Spitzenverdiener/in', desc:'Erreiche ein Jahresgehalt von 100.000 €.', icon:'💼', cond:()=> player.job && player.job.salary>=100000},
+    {id:'bankrupt_survivor', name:'Comeback', desc:'Überstehe eine Insolvenz.', icon:'📉', cond:()=> !!player._everBankrupt},
+    {id:'remarried', name:'Zweite Chance', desc:'Heirate erneut nach einer Trennung.', icon:'💞', cond:()=> player.npcs.filter(n=>n.isEx).length>=1 && player.npcs.some(n=>n.isSpouse)},
+    {id:'multi_divorce', name:'Auf der Suche', desc:'Lass dich zweimal scheiden.', icon:'💔', cond:()=> (player.divorceCount||0)>=2},
+    {id:'centamillionaire', name:'Imperium', desc:'Besitze 100.000.000 €.', icon:'🏦', cond:()=> player.money>=100000000},
+    {id:'dual_qualified', name:'Doppelt qualifiziert', desc:'Schließe Ausbildung und Studium ab.', icon:'🎓', cond:()=> !!player.education.ausbildung && !!player.education.degree},
+    {id:'business_empire', name:'Firmenimperium', desc:'Baue deine Firma auf Stufe 5 aus.', icon:'🏢', cond:()=> player.business && player.business.level>=5},
+    {id:'adoptive_parent', name:'Adoptivelternteil', desc:'Adoptiere ein Kind.', icon:'🍼', cond:()=> !!player._everAdopted},
+  ];
+
+  function checkAchievements(){
+    if(!player) return;
+    const newly=[];
+    achievementDefs.forEach(a=>{
+      if(!meta.achievements.includes(a.id) && a.cond()){ meta.achievements.push(a.id); newly.push(a); }
+    });
+    if(newly.length){ saveMeta(); newly.forEach(a=> addLog(a.icon, `Erfolg freigeschaltet: ${a.name}`, 'good')); }
+  }
+  function renderAchievements(){
+    const list=document.getElementById('achievement-list');
+    const prog=document.getElementById('achievement-progress');
+    const unlockedCount = achievementDefs.filter(a=>meta.achievements.includes(a.id)).length;
+    prog.innerHTML = `<div class="card-name">${unlockedCount} / ${achievementDefs.length} freigeschaltet</div><div class="card-sub">Gilt dauerhaft, über mehrere Leben hinweg.</div>`;
+    list.innerHTML='';
+    achievementDefs.forEach(a=>{
+      const unlocked = meta.achievements.includes(a.id);
+      const card=document.createElement('div'); card.className='card'; card.style.opacity = unlocked?'1':'0.4';
+      card.innerHTML = `<div class="card-top"><div class="card-icon">${a.icon}</div><div><div class="card-name">${a.name}</div><div class="card-sub">${a.desc}</div></div></div>`;
+      list.appendChild(card);
+    });
+  }
+  function statRow(k,v){ return `<div class="card" style="display:flex;justify-content:space-between; padding:10px 12px;"><span style="color:var(--sub); font-size:12px; font-weight:700;">${k}</span><span style="font-size:12.5px; font-weight:800;">${v}</span></div>`; }
+  function renderStats(){
+    if(!player) return;
+    document.getElementById('stats-current').innerHTML = [
+      statRow('Alter', player.age+' Jahre'),
+      statRow('Vermögen', fmtMoney(player.money)),
+      statRow('IQ (Intelligenz)', player.stats.smarts),
+      statRow('Attraktivität', player.stats.looks),
+      statRow('Ruhm', player.stats.fame),
+      statRow('Social-Media-Follower', totalFollowers().toLocaleString('de-DE')),
+      statRow('Vermögenswerte', player.assets.length),
+      statRow('Lebende Haustiere', player.pets.filter(p=>p.alive).length),
+      statRow('Kontakte im Umfeld', player.npcs.filter(n=>n.alive).length),
+      statRow('Kinder', player.relationships.filter(r=>r.type==='Kind').length),
+      statRow('Scheidungen', player.divorceCount||0),
+      statRow('Jahre im Gefängnis', player.totalPrisonYears||0),
+      statRow('Berufe insgesamt', player.jobsHeld.length + (player.job?1:0)),
+      statRow('Bildung', eduLabel()),
+    ].join('');
+    document.getElementById('stats-alltime').innerHTML = [
+      statRow('Gespielte Leben', meta.livesPlayed),
+      statRow('Freigeschaltete Erfolge', meta.achievements.length+' / '+achievementDefs.length),
+    ].join('');
+  }
+
+  /* ================= LEBEN BEENDEN ================= */
+  function endLifeManually(){
+    if(!player || !player.alive) return;
+    if(!confirm('Möchtest du dieses Leben wirklich beenden?')) return;
+    player.alive=false; sfx.death();
+    player.causeOfDeath = 'hat diese Lebensgeschichte hier bewusst enden lassen';
+    addLog('🏁', `${player.first} ${player.last} ${player.causeOfDeath}. Im Alter von ${player.age} Jahren.`, 'bad');
+    meta.livesPlayed = (meta.livesPlayed||0)+1; saveMeta();
+    clearSave();
+    closeSheet();
+    showObituary();
+  }
+  document.getElementById('open-achievements').addEventListener('click', ()=> openSheet('achievements'));
+  document.getElementById('open-stats').addEventListener('click', ()=> openSheet('stats'));
+  document.getElementById('btn-end-life').addEventListener('click', endLifeManually);
+
+  /* ================= RANDOM EVENTS ================= */
+  function bracket(){
+    const a=player.age;
+    if(a<=4) return 'baby'; if(a<=12) return 'kind'; if(a<=17) return 'teen'; if(a<=59) return 'erwachsen'; return 'senior';
+  }
+  const events = {
+    baby:[
+      {icon:'👣',text:()=>'Du machst deine ersten Schritte.',effects:{happiness:3}},
+      {icon:'🗣️',text:()=>'Du sprichst dein erstes Wort.',effects:{smarts:2}},
+      {icon:'🤒',text:()=>'Du hattest eine Erkältung, bist aber wieder gesund.',effects:{health:-3}},
+      {icon:'🧸',text:()=>'Du bekommst dein Lieblingsspielzeug geschenkt.',effects:{happiness:4}},
+      {icon:'😢',text:()=>'Anstrengender Zahnungs-Schub.',effects:{happiness:-3}},
+      {icon:'🎵',text:()=>'Ein Schlaflied wird dir vorgesungen.',effects:{happiness:3}},
+      {icon:'🩹',text:()=>'Du fällst von der Wickelkommode, aber es geht dir gut.',effects:{health:-4}},
+      {icon:'💉',text:()=>'Routine-Impftermin.',effects:{health:3}},
+    ],
+    kind:[
+      {icon:'🏫',text:()=>'In der Schule läuft es gut, Lob von der Lehrkraft.',effects:{smarts:3,happiness:2}},
+      {icon:'🚴',text:()=>'Du lernst Fahrradfahren.',effects:{happiness:2,health:2}},
+      {icon:'🎭',text:()=>'Bei der Theateraufführung bekommst du eine Hauptrolle.',effects:{happiness:4,smarts:2}},
+      {icon:'📉',text:()=>'Eine Klassenarbeit läuft nicht so gut.',effects:{smarts:-2,happiness:-2}},
+      {icon:'🍬',text:()=>'Ein Mitschüler bietet dir Süßigkeiten für einen Streich an. Machst du mit?', choices:[
+        {label:'Mitmachen',result:'Der Streich fliegt auf, du bekommst Ärger.',effects:{happiness:2,smarts:-2}},
+        {label:'Ablehnen',result:'Du bleibst brav und wirst gelobt.',effects:{smarts:2}}]},
+      {icon:'📚',text:()=>'Eine große Prüfung steht an. Wie bereitest du dich vor?', choices:[
+        {label:'Hart lernen',result:'Sehr gute Note!',effects:{smarts:4,happiness:-2}},
+        {label:'Spielen gehen',result:'Schlechte Note, aber Spaß gehabt.',effects:{happiness:4,smarts:-2}}]},
+      {icon:'🩹',text:()=>'Du bist vom Klettergerüst gefallen.',effects:{health:-6,happiness:-2}},
+      {icon:'🏆',text:()=>'Beim Sportfest gewinnst du eine Medaille.',effects:{happiness:5,health:2,fitness:3}},
+      {icon:'🎤',text:()=>'Beim Schulkonzert singst du solo — alle sind begeistert.', choices:[
+        {label:'Stolz genießen',result:'Ein Talentscout notiert sich deinen Namen.',effects:{happiness:5}, custom:()=>{ if(Math.random()<0.3) player.careerUnlocks.saenger=true; }},
+        {label:'Verlegen abwinken',result:'Du bleibst lieber bescheiden.',effects:{happiness:1}}]},
+      {icon:'📓',text:()=>'Du hast deine Hausaufgaben mehrfach vergessen. Die Lehrkraft droht mit Nachsitzen.', choices:[
+        {label:'Ausrede erfinden',result:'Es funktioniert nicht wirklich gut.',effects:{smarts:-1,happiness:-2}},
+        {label:'Nachsitzen akzeptieren',result:'Du sitzt eine Stunde nach, aber die Sache ist erledigt.',effects:{smarts:1,happiness:-3}}]},
+      {icon:'😬',text:()=>'Bei einem Streich geht etwas gehörig schief — die Schulleitung ist alarmiert. Ein Verweis droht.', choices:[
+        {label:'Sich entschuldigen',result:'Die Schulleitung zeigt sich milde gestimmt.',effects:{happiness:-3}},
+        {label:'Uneinsichtig bleiben',result:'Ein Verweis von der Schule folgt.',effects:{happiness:-8,smarts:-2}}]},
+    ],
+    teen:[
+      {icon:'💔',text:()=>'Deine erste Beziehung geht in die Brüche.',effects:{happiness:-6}},
+      {icon:'🎉',text:()=>'Du wirst zu einer coolen Party eingeladen.',effects:{happiness:5,smarts:-1}},
+      {icon:'📱',text:()=>'Ein peinliches Foto von dir verbreitet sich in der Klassengruppe.',effects:{happiness:-5}},
+      {icon:'💃',text:()=>'Der Schulball steht an.',effects:{happiness:6,money:-100}},
+      {icon:'🍺',text:()=>'Freunde bieten dir auf einer Party Alkohol an. Was tust du?', choices:[
+        {label:'Probieren',result:'Übler Kater am nächsten Tag.',effects:{health:-4,happiness:2}},
+        {label:'Ablehnen',result:'Du bleibst standhaft.',effects:{smarts:2}}]},
+      {icon:'🏃',text:()=>'Die Schule sucht neue Mitglieder fürs Sportteam. Machst du mit?', choices:[
+        {label:'Beitreten',result:'Du wirst Teil des Teams.',effects:{health:5,happiness:5,fitness:5}},
+        {label:'Nicht mein Ding',result:'Du verbringst deine Zeit anders.',effects:{}}]},
+      {icon:'🏅',text:()=>'Bei den Bezirksmeisterschaften läufst du zur Bestzeit auf!', choices:[
+        {label:'Weiter angreifen',result:'Ein Sport-Scout wird auf dich aufmerksam.',effects:{happiness:5,fitness:3}, custom:()=>{ if(Math.random()<0.35) player.careerUnlocks.sportler=true; }},
+        {label:'Entspannt bleiben',result:'Schön war es trotzdem.',effects:{happiness:2}}]},
+      {icon:'🎬',text:()=>'Beim Schultheater überzeugst du mit einer starken Rolle.', choices:[
+        {label:'Weiter vorspielen',result:'Ein Talentscout ist beeindruckt.',effects:{happiness:4}, custom:()=>{ if(Math.random()<0.3) player.careerUnlocks.schauspieler=true; }},
+        {label:'War nur Spaß',result:'Du machst weiter wie bisher.',effects:{happiness:1}}]},
+      {icon:'📹',text:()=>'Eines deiner Videos verbreitet sich rasant im Netz.', choices:[
+        {label:'Dranbleiben',result:'Deine Reichweite wächst spürbar.',effects:{happiness:4}, custom:()=>{ player.careerUnlocks.influencer=true; addStat('fame',5); }},
+        {label:'Ignorieren',result:'Du machst dir nichts draus.',effects:{}}]},
+      {icon:'🏋️',text:()=>'Du entdeckst deine Liebe zum Sport.',effects:{health:4,looks:3,fitness:4}},
+      {icon:'👪',text:()=>'Streit mit deinen Eltern über deine Ausgehzeiten.',effects:{happiness:-3}},
+      {icon:'✈️',text:()=>'Deine erste Reise mit Freunden ohne Eltern.',effects:{happiness:7,money:-250}},
+    ],
+    erwachsen:[
+      {icon:'💪',text:()=>'Du hältst dich fit und fühlst dich großartig.',effects:{health:4,looks:2,fitness:3}},
+      {icon:'😩',text:()=>'Stress im Alltag setzt dir zu.',effects:{happiness:-5,health:-2}},
+      {icon:'🎁',text:()=>'Ein Verwandter überrascht dich mit einem Geldgeschenk.',effects:{money:rnd(200,1500),happiness:3}},
+      {icon:'🚗',text:()=>'Kleine Reparatur an deinem Fahrzeug nötig.',effects:{money:-rnd(150,600)}, cond:()=>ownsVehicle()},
+      {icon:'🚔',text:()=>'Bei einer Verkehrskontrolle wirst du angehalten.', cond:()=>player.licenses.auto, choices:[
+        {label:'Ruhig bleiben',result:'Alles in Ordnung, du darfst weiterfahren.',effects:{}},
+        {label:'Nervös reagieren',result:'Der Beamte wird misstrauisch und schreibt einen Strafzettel.',effects:{money:-80,happiness:-2}}]},
+      {icon:'🏠',text:()=>'Wohnungssuche ist stressiger als gedacht.',effects:{happiness:-3}},
+      {icon:'💰',text:()=>'Ein entfernter Verwandter hinterlässt dir eine kleine Erbschaft.',effects:{money:rnd(1000,8000),happiness:4}},
+      {icon:'🦷',text:()=>'Unerwarteter Zahnarztbesuch nötig.',effects:{money:-rnd(100,400),health:2}},
+      {icon:'💼',text:()=>'Ein Headhunter meldet sich mit einem verlockenden Angebot. Wechselst du?', choices:[
+        {label:'Wechseln',result:'Dein Gehalt steigt spürbar.',effects:{happiness:4}, custom:()=>{ if(player.job) player.job.salary=Math.round(player.job.salary*1.2); }},
+        {label:'Bleiben',result:'Du bleibst deinem Job treu.',effects:{happiness:1}}]},
+      {icon:'📈',text:()=>'Ein Freund empfiehlt dir eine riskante Investition. Machst du mit?', choices:[
+        {label:'Investieren',result:'Der Ausgang war ungewiss …',effects:{}, custom:()=>{ if(Math.random()<0.5){addMoney(rnd(1000,5000));} else {addMoney(-Math.min(player.money,rnd(500,3000)));} }},
+        {label:'Nicht investieren',result:'Du gehst auf Nummer sicher.',effects:{}}]},
+      {icon:'🏍️',text:()=>'Midlife-Crisis. Was gönnst du dir?', choices:[
+        {label:'Motorrad kaufen',result:'Du fühlst dich jung — und ärmer.',effects:{happiness:8,money:-9000}},
+        {label:'Vernünftig bleiben',result:'Du sparst dir das Geld.',effects:{happiness:-2}}]},
+      {icon:'🏖️',text:()=>'Du gönnst dir einen entspannten Urlaub.',effects:{happiness:8,money:-rnd(300,1200)}},
+      {icon:'📸',text:()=>'Paparazzi fotografieren dich vor einem Restaurant.',effects:{fame:3}},
+      {icon:'😵',text:()=>'Überstunden und Dauerstress fordern ihren Tribut — ein handfestes Burnout droht.', choices:[
+        {label:'Auszeit nehmen',result:'Du erholst dich, verlierst aber etwas Einkommen.',effects:{happiness:8,health:5,money:-1200}},
+        {label:'Weitermachen',result:'Du beißt dich durch, auf Kosten deiner Gesundheit.',effects:{happiness:-8,health:-10}}]},
+      {icon:'🩻',text:()=>'Bei einer Untersuchung wird eine ernste Erkrankung festgestellt.', choices:[
+        {label:'Sofort operieren lassen',result:'Die Operation verläuft erfolgreich.',effects:{health:10,money:-rnd(3000,9000),happiness:-3}},
+        {label:'Erstmal abwarten',result:'Ein riskantes Zögern.',effects:{health:-12,happiness:-4}}]},
+      {icon:'🎂',text:()=>'Die ganze Familie kommt zu einer großen Feier zusammen.',effects:{happiness:7}},
+    ],
+    senior:[
+      {icon:'🧓',text:()=>'Du genießt deinen wohlverdienten Ruhestand.',effects:{happiness:4}},
+      {icon:'🩺',text:()=>'Ein Routine-Check beim Arzt verläuft gut.',effects:{health:3}},
+      {icon:'🧩',text:()=>'Du hältst deinen Geist mit Rätseln fit.',effects:{smarts:2,happiness:2}},
+      {icon:'🤕',text:()=>'Ein Sturz macht dir zu schaffen.',effects:{health:-6}},
+      {icon:'👨‍👩‍👧‍👦',text:()=>'Deine Familie besucht dich.',effects:{happiness:6}},
+      {icon:'✈️',text:()=>'Du machst endlich die große Reise deines Lebens.',effects:{happiness:10,money:-rnd(1500,4000)}},
+      {icon:'💊',text:()=>'Gesundheitliche Rückschläge zwingen dich zur Ruhe.',effects:{health:-5,happiness:-2}},
+      {icon:'👶',text:()=>'Deine Enkel besuchen dich und bringen Leben ins Haus.',effects:{happiness:7}},
+    ],
+  };
+
+  const worldEvents = [
+    {icon:'🌪️',text:()=>'Ein schweres Unwetter richtet in deiner Stadt Schäden an.',effects:{happiness:-4,money:-rnd(200,1500)}},
+    {icon:'📉',text:()=>'Eine Wirtschaftskrise trifft das Land.', choices:[
+      {label:'Ausgaben einschränken',result:'Du kommst glimpflich davon.',effects:{happiness:-3}},
+      {label:'Wie gewohnt weiterleben',result:'Deine Ersparnisse schrumpfen deutlich.',effects:{happiness:-2}, custom:()=>{ addMoney(-Math.round(player.money*0.15)); player.savings=Math.round(player.savings*0.85); }}]},
+    {icon:'🦠',text:()=>'Eine Pandemie sorgt weltweit für Ausnahmezustand.', choices:[
+      {label:'Vorsichtig verhalten',result:'Du bleibst gesund.',effects:{happiness:-4}},
+      {label:'Risiko eingehen',result:'Du erkrankst leider.',effects:{health:-15,happiness:-6}}]},
+    {icon:'🎉',text:()=>'Du gewinnst einen kleinen Betrag im Lotto — reiner Zufall!',effects:{money:rnd(200,3000),happiness:4}},
+    {icon:'💰',text:()=>'Eine überraschende Erbschaft erreicht dich.',effects:{money:rnd(2000,20000),happiness:5}},
+  ];
+  function fireHouseEvent(){
+    const realEstate = player.assets.filter(a=> marketCats.immobilien.items.some(i=>i.name===a.name));
+    if(realEstate.length===0) return false;
+    const home = pick(realEstate);
+    const ev = { icon:'🔥', text:()=>`In deinem Anwesen "${home.name}" bricht ein Feuer aus!`, choices:[
+      {label:'Versicherung zahlt',result:'Der Schaden wird ersetzt.',effects:{happiness:-6}, custom:()=>{ addMoney(-Math.round(home.price*0.05)); }},
+      {label:'Unversichert',result:'Ein herber Verlust.',effects:{happiness:-15}, custom:()=>{ const idx=player.assets.indexOf(home); if(idx>-1) player.assets.splice(idx,1); }},
+    ]};
+    showEventChoice(ev); return true;
+  }
+  function petRunAwayEvent(){
+    const alivePets = player.pets.filter(p=>p.alive);
+    if(alivePets.length===0) return false;
+    const p = pick(alivePets);
+    const ev = { icon:'🐾', text:()=>`Dein Haustier ${p.name} ist weggelaufen!`, choices:[
+      {label:'Sofort suchen gehen',result: Math.random()<0.6 ? `Du findest ${p.name} wieder!` : `Leider bleibt ${p.name} verschwunden.`, effects:{happiness:-2}, custom:()=>{ if(Math.random()<0.6){} else { p.alive=false; } }},
+      {label:'Abwarten',result:`${p.name} findet von allein zurück.`,effects:{happiness:-4}},
+    ]};
+    showEventChoice(ev); return true;
+  }
+  const fameEvents = [
+    {icon:'📷',text:()=>'Paparazzi verfolgen dich einen ganzen Tag lang.',effects:{fame:2,happiness:-3}},
+    {icon:'🎙️',text:()=>'Ein großes Magazin bittet um ein Interview.', choices:[
+      {label:'Ehrlich antworten',result:'Die Fans lieben deine Offenheit.',effects:{fame:5,happiness:3}},
+      {label:'Ausweichend bleiben',result:'Das Interview wirkt langweilig.',effects:{fame:-2}}]},
+    {icon:'🌀',text:()=>'Ein Skandal um dich macht die Runde.', choices:[
+      {label:'Offen dazu stehen',result:'Deine Ehrlichkeit kommt gut an.',effects:{fame:3,happiness:-4}},
+      {label:'Alles abstreiten',result:'Die Sache eskaliert weiter.',effects:{fame:-8,happiness:-8}}]},
+  ];
+
+  function triggerRandomEvent(){
+    if(player.prisonYearsLeft>0) return;
+    const spouse = player.npcs.find(n=>n.isSpouse && n.alive);
+    if(spouse && spouse.relationship<20 && Math.random()<0.35){ showDivorceCrisis(spouse); return; }
+    if(Math.random()<0.05){ showEventChoice(toChoiceEvent(pick(worldEvents))); return; }
+    if(player.stats.fame>=30 && Math.random()<0.15){ showEventChoice(toChoiceEvent(pick(fameEvents))); return; }
+    if(Math.random()<0.03 && fireHouseEvent()) return;
+    if(Math.random()<0.05 && petRunAwayEvent()) return;
+    const pool = events[bracket()].filter(ev=> !ev.cond || ev.cond());
+    showEventChoice(toChoiceEvent(pick(pool)));
+  }
+  function scaleEffects(effects, factor){
+    const out = {};
+    if(!effects) return out;
+    Object.keys(effects).forEach(k=>{ out[k] = Math.round(effects[k]*factor); });
+    return out;
+  }
+  function toChoiceEvent(ev){
+    if(ev.choices) return ev;
+    const base = ev.effects || {};
+    const sum = Object.values(base).reduce((a,b)=>a+b,0);
+    const cautious = scaleEffects(base, 0.4);
+    const positiveLabelSets = [
+      ['Voll auskosten','Du lässt es auf dich zukommen.','Zurückhaltend bleiben','Du reagierst besonnener.'],
+      ['Mit beiden Händen zugreifen','Du nutzt die Gelegenheit voll aus.','Locker angehen','Du bleibst entspannt.'],
+      ['Begeistert reagieren','Du freust dich sichtlich.','Gelassen bleiben','Du nimmst es gelassen hin.'],
+      ['Die Chance nutzen','Du machst das Beste daraus.','Abwarten','Du hältst dich zurück.'],
+    ];
+    const negativeLabelSets = [
+      ['So hinnehmen','Du lässt es über dich ergehen.','Gegensteuern','Du versuchst, die Situation zu verbessern.'],
+      ['Tapfer durchstehen','Du beißt die Zähne zusammen.','Hilfe suchen','Du sprichst mit jemandem darüber.'],
+      ['Die Sache aussitzen','Du wartest, bis es vorbeigeht.','Aktiv werden','Du unternimmst sofort etwas dagegen.'],
+      ['Ruhig bleiben','Du behältst einen kühlen Kopf.','Dich wehren','Du stellst dich der Sache entgegen.'],
+    ];
+    const set = pick(sum>=0 ? positiveLabelSets : negativeLabelSets);
+    const choices = [
+      { label:set[0], result:set[1], effects: base },
+      { label:set[2], result:set[3], effects: cautious, custom:()=>{ addStat('smarts', sum<0?1:0); } },
+    ];
+    const thirdOptions = [
+      { label:'Bei jemandem Rat suchen', result:'Ein Gespräch hilft dir, die Sache einzuordnen.', effects: scaleEffects(base,0.7), custom:()=>{ const alive=player.relationships.filter(r=>r.alive); if(alive.length){ const r=pick(alive); r.relationship=clamp(r.relationship+3); } } },
+      { label:'Geld investieren', result:'Du gibst etwas aus, um es besser zu machen.', effects: {...scaleEffects(base,1.15), money:(base.money||0)-100}, custom:()=>{} },
+      { label:'Alles auf eine Karte setzen', result:'Du gehst das volle Risiko ein.', effects: scaleEffects(base,1.7), custom:()=>{ addStat('happiness', sum>=0?2:-2); } },
+      { label:'Dich ablenken', result:'Du denkst bewusst an etwas anderes.', effects: {happiness: sum>=0?1:2}, custom:()=>{} },
+    ];
+    choices.push(pick(thirdOptions));
+    return { icon: ev.icon, text: ev.text, choices };
+  }
+  function doDivorce(spouse){
+    addMoney(-Math.round(player.money*0.3));
+    spouse.isSpouse=false; spouse.isEx=true; spouse.baseType='Ex-Partner/in';
+    player.divorceCount = (player.divorceCount||0)+1;
+    addStat('happiness',-10);
+  }
+  function showDivorceCrisis(spouse){
+    const ev = { icon:'💔', text:()=>`Deine Ehe mit ${spouse.name} steckt in einer tiefen Krise.`, choices:[
+      {label:'Um die Beziehung kämpfen', result:'Ihr rauft euch zusammen.', effects:{happiness:2}, custom:()=>{ spouse.relationship=clamp(spouse.relationship+25); }},
+      {label:'Scheidung einreichen', result:'Ihr lasst euch scheiden.', effects:{}, custom:()=>{ doDivorce(spouse); }},
+    ]};
+    showEventChoice(ev);
+  }
+  function effectsTone(effects){
+    if(!effects) return '';
+    const sum=Object.values(effects).reduce((a,b)=>a+b,0);
+    return sum>0?'good':sum<0?'bad':'';
+  }
+  function applyEffects(effects){
+    if(!effects) return;
+    Object.keys(effects).forEach(k=>{ if(k==='money') addMoney(effects[k]); else addStat(k, effects[k]); });
+  }
+  function resolveChoice(ev, c){
+    applyEffects(c.effects); if(c.custom) c.custom();
+    addLog(ev.icon, ev.text()+' → '+c.result, effectsTone(c.effects));
+    pendingEvent=null; closeSheet(); renderHeader();
+  }
+  function showEventChoice(ev){
+    pendingEvent = ev;
+    document.getElementById('event-icon').textContent = ev.icon;
+    document.getElementById('event-text').textContent = ev.text();
+    const wrap = document.getElementById('event-choices'); wrap.innerHTML='';
+    ev.choices.forEach(c=>{
+      const b=document.createElement('button'); b.className='choice-btn'; b.textContent=c.label;
+      b.addEventListener('click', ()=> resolveChoice(ev,c));
+      wrap.appendChild(b);
+    });
+    openSheet('event');
+  }
+  document.getElementById('btn-random-choice').addEventListener('click', ()=>{
+    if(!pendingEvent) return;
+    resolveChoice(pendingEvent, pick(pendingEvent.choices));
+  });
+
+  /* ================= SHEETS ================= */
+  let currentSheet=null;
+  function openSheet(name){
+    currentSheet=name;
+    document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sheet-'+name).classList.add('active');
+    document.getElementById('overlay').classList.add('open');
+    sfx.click();
+    if(name==='beziehungen') renderRelationships();
+    if(name==='bildung'){ workTab=null; renderWork(); }
+    if(name==='aktivitaeten'){ aktTab=null; renderActivities(); }
+    if(name==='vermoegen'){ vermTab=null; renderMarket(); }
+    if(name==='cheats') fillCheatInputs();
+    if(name==='achievements') renderAchievements();
+    if(name==='stats') renderStats();
+  }
+  function closeSheet(){ document.getElementById('overlay').classList.remove('open'); currentSheet=null; }
+  document.querySelectorAll('.dock-btn').forEach(b=> b.addEventListener('click', ()=> openSheet(b.dataset.sheet)));
+  document.getElementById('btn-settings').addEventListener('click', ()=> openSheet('einstellungen'));
+  document.getElementById('overlay').addEventListener('click', (e)=>{ if(e.target.id==='overlay' && currentSheet!=='event') closeSheet(); });
+  document.getElementById('open-cheats').addEventListener('click', ()=> openSheet('cheats'));
+
+  /* ================= BEZIEHUNGEN / KONTAKTE ================= */
+  function npcCardHTML(n){
+    return `<div class="card-top"><div class="card-icon">${avatarSVG(n.avatar)}</div><div><div class="card-name">${n.name}</div><div class="card-sub">${relLabel(n)}</div></div></div>
+    <div class="rel-bar"><div style="width:${n.relationship}%"></div></div>`;
+  }
+  function relLabel(n){
+    if(n.isSpouse) return 'Ehepartner/in';
+    if(n.isEx) return 'Ex-Partner/in';
+    if(n.relationship>=70) return 'Enge/r Freund/in';
+    if(n.relationship>=40) return 'Freund/in';
+    if(n.relationship<=15) return 'Rivale/in';
+    return n.baseType;
+  }
+  function sectionHeader(wrap, text){
+    const h=document.createElement('div'); h.className='field-label'; h.textContent=text; wrap.appendChild(h);
+  }
+  function renderRelationships(){
+    const wrap=document.getElementById('rel-list'); wrap.innerHTML='';
+
+    sectionHeader(wrap, '👪 Familie');
+    const fam=player.relationships;
+    if(fam.length===0){ const h=document.createElement('div'); h.className='empty-hint'; h.textContent='Keine Familie vorhanden.'; wrap.appendChild(h); }
+    fam.forEach(r=>{
+      const card=document.createElement('div'); card.className='card';
+      if(!r.alive){ card.innerHTML=`<div class="card-top"><div class="card-icon">${avatarSVG(r.avatar)}</div><div><div class="card-name">${r.name}</div><div class="card-sub">${r.type} · verstorben</div></div></div>`; wrap.appendChild(card); return; }
+      card.innerHTML = `<div class="card-top"><div class="card-icon">${avatarSVG(r.avatar)}</div><div><div class="card-name">${r.name}</div><div class="card-sub">${r.type}</div></div></div>
+      <div class="rel-bar"><div style="width:${r.relationship}%"></div></div>
+      <div class="card-actions">
+        <button class="mini-btn" data-a="compliment" ${actionsLeft('compliment_'+r.id,1)<1?'disabled':''}>💬 Reden</button>
+        <button class="mini-btn gold" data-a="gift" ${actionsLeft('gift_'+r.id,1)<1?'disabled':''}>🎁 Geschenk (-100€)</button>
+        <button class="mini-btn purple" data-a="advice" ${actionsLeft('advice_'+r.id,1)<1?'disabled':''}>🧠 Rat holen</button>
+        <button class="mini-btn green" data-a="askmoney" ${actionsLeft('askmoney_'+r.id,1)<1?'disabled':''}>💶 Um Geld bitten</button>
+        <button class="mini-btn danger" data-a="insult" ${actionsLeft('insult_'+r.id,1)<1?'disabled':''}>💢 Streiten</button>
+      </div>`;
+      card.querySelectorAll('.mini-btn').forEach(btn=> btn.addEventListener('click', ()=> famInteract(r, btn.dataset.a)));
+      wrap.appendChild(card);
+    });
+
+    sectionHeader(wrap, '💞 Partner');
+    const spouse = player.npcs.find(n=>n.isSpouse && n.alive);
+    if(spouse){
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML = npcCardHTML(spouse) + `<div class="card-actions">
+        <button class="mini-btn" data-a="talk" ${actionsLeft('talk_'+spouse.id,1)<1?'disabled':''}>💬 Reden</button>
+        <button class="mini-btn gold" data-a="gift" ${actionsLeft('gift_'+spouse.id,1)<1?'disabled':''}>🎁 Geschenk (-100€)</button>
+        <button class="mini-btn green" data-a="hang" ${actionsLeft('hang_'+spouse.id,1)<1?'disabled':''}>🌙 Date-Abend</button>
+        <button class="mini-btn purple" data-a="advice" ${actionsLeft('advice_'+spouse.id,1)<1?'disabled':''}>🧠 Rat holen</button>
+        <button class="mini-btn danger" data-a="fight" ${actionsLeft('fight_'+spouse.id,1)<1?'disabled':''}>💢 Streiten</button>
+        <button class="mini-btn danger" data-a="divorce">📝 Scheidung einreichen</button>
+      </div>`;
+      card.querySelectorAll('.mini-btn').forEach(btn=> btn.addEventListener('click', ()=> npcInteract(spouse, btn.dataset.a)));
+      wrap.appendChild(card);
+      if(player.age>=18 && player.age<=48){
+        const kidCard=document.createElement('div'); kidCard.className='card';
+        kidCard.innerHTML=`<div class="card-actions">
+          <button class="mini-btn gold" id="btn-have-kid">👶 Kind bekommen</button>
+          <button class="mini-btn purple" id="btn-adopt-kid">🍼 Kind adoptieren</button>
+        </div>`;
+        wrap.appendChild(kidCard);
+        document.getElementById('btn-have-kid').addEventListener('click', ()=>{
+          const g=pick(['weiblich','männlich']);
+          player.relationships.push({ id:'kind'+Date.now(), name:randomName(g)+' '+player.last, type:'Kind', avatar:randomAvatar(g), relationship:rnd(70,95), alive:true });
+          addLog('👶','Ihr bekommt ein Kind!','good'); addStat('happiness',10); renderRelationships();
+        });
+        document.getElementById('btn-adopt-kid').addEventListener('click', ()=>{
+          if(!pay(3000)) return;
+          const g=pick(['weiblich','männlich']);
+          player.relationships.push({ id:'kind'+Date.now(), name:randomName(g)+' '+pick(lastNames), type:'Kind', avatar:randomAvatar(g), relationship:rnd(60,90), alive:true });
+          player._everAdopted = true;
+          addLog('🍼','Ihr adoptiert ein Kind!','good'); addStat('happiness',10); renderHeader(); renderRelationships();
+        });
+      }
+    } else if(player.datingId){
+      const d = player.npcs.find(n=>n.id===player.datingId && n.alive);
+      const h=document.createElement('div'); h.className='empty-hint';
+      h.textContent = d ? `Du datest gerade ${d.name}. Baut eure Beziehung im Bereich „Umfeld“ weiter aus.` : 'Noch kein Partner. Lerne Menschen in deinem Umfeld kennen.';
+      wrap.appendChild(h);
+    } else {
+      if(player.age<16){ const h=document.createElement('div'); h.className='empty-hint'; h.textContent='Dating ist erst ab 16 Jahren möglich.'; wrap.appendChild(h); }
+      else { const h=document.createElement('div'); h.className='empty-hint'; h.textContent='Noch kein Partner. Baue im Bereich „Umfeld“ Beziehungen auf — ab 30% Vertrautheit kannst du jemanden verabreden.'; wrap.appendChild(h); }
+    }
+
+    sectionHeader(wrap, '🧑‍🤝‍🧑 Umfeld');
+    const list = player.npcs.filter(n=>n.alive && !n.isSpouse);
+    if(list.length===0){ const h=document.createElement('div'); h.className='empty-hint'; h.textContent='Noch niemand in deinem Umfeld. Schule, Job und Zufallsbegegnungen bringen neue Kontakte.'; wrap.appendChild(h); }
+    list.forEach(n=>{
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML = npcCardHTML(n) + `<div class="card-actions">
+        <button class="mini-btn" data-a="talk" ${actionsLeft('talk_'+n.id,1)<1?'disabled':''}>💬 Reden</button>
+        <button class="mini-btn green" data-a="hang" ${actionsLeft('hang_'+n.id,1)<1?'disabled':''}>🎯 Zeit verbringen</button>
+        <button class="mini-btn gold" data-a="gift" ${actionsLeft('gift_'+n.id,1)<1?'disabled':''}>🎁 Geschenk (-80€)</button>
+        <button class="mini-btn purple" data-a="advice" ${actionsLeft('advice_'+n.id,1)<1?'disabled':''}>🧠 Rat holen</button>
+        <button class="mini-btn green" data-a="askmoney" ${actionsLeft('askmoney_'+n.id,1)<1?'disabled':''}>💶 Um Geld bitten</button>
+        <button class="mini-btn danger" data-a="fight" ${actionsLeft('fight_'+n.id,1)<1?'disabled':''}>💢 Streiten</button>
+        ${(!player.npcs.some(x=>x.isSpouse&&x.alive) && n.relationship>=30 && player.age>=16) ? '<button class="mini-btn purple" data-a="date" '+(actionsLeft('date_'+n.id,1)<1?'disabled':'')+'>💘 Verabreden</button>' : ''}
+        ${(n.relationship>=75 && player.datingId===n.id) ? '<button class="mini-btn purple" data-a="propose">💍 Heiratsantrag</button>' : ''}
+      </div>`;
+      card.querySelectorAll('.mini-btn').forEach(btn=> btn.addEventListener('click', ()=> npcInteract(n, btn.dataset.a)));
+      wrap.appendChild(card);
+    });
+  }
+  function famInteract(r, action){
+    const key = action+'_'+r.id;
+    if(!useAction(key,1)){ addLog('⏳', `Ihr hattet dieses Jahr schon genug Kontakt.`, ''); renderRelationships(); return; }
+    if(action==='compliment'){ r.relationship=clamp(r.relationship+rnd(3,8)); addStat('happiness',1); addLog('💬', `Du redest mit ${r.name}.`, 'good'); }
+    if(action==='insult'){ r.relationship=clamp(r.relationship-rnd(8,15)); addLog('💢', `Du streitest mit ${r.name}.`, 'bad'); }
+    if(action==='gift'){
+      if(player.money<100){ addLog('💸','Nicht genug Geld für ein Geschenk.','bad'); return; }
+      addMoney(-100); r.relationship=clamp(r.relationship+rnd(8,15)); addLog('🎁', `Du schenkst ${r.name} etwas Schönes.`, 'good');
+    }
+    if(action==='advice'){
+      addStat('smarts', rnd(1,3)); r.relationship=clamp(r.relationship+rnd(2,5));
+      addLog('🧠', `${r.name} gibt dir einen guten Rat.`, 'good');
+    }
+    if(action==='askmoney'){
+      const chance = r.relationship/140;
+      if(Math.random()<chance){
+        const g=rnd(50,rnd(100,400)); addMoney(g); r.relationship=clamp(r.relationship-3);
+        addLog('💶', `${r.name} leiht dir ${fmtMoney(g)}.`, 'good');
+      } else {
+        r.relationship=clamp(r.relationship-6);
+        addLog('🙅', `${r.name} kann oder will dir gerade kein Geld geben.`, 'bad');
+      }
+    }
+    renderHeader(); renderRelationships();
+  }
+  function npcInteract(n, action){
+    const throttled = ['talk','hang','gift','fight','date','advice','askmoney'];
+    if(throttled.includes(action)){
+      const key = action+'_'+n.id;
+      if(!useAction(key,1)){ addLog('⏳', `Ihr hattet dieses Jahr schon genug Kontakt mit ${n.name}.`, ''); renderRelationships(); return; }
+    }
+    if(action==='talk'){ n.relationship=clamp(n.relationship+rnd(2,6)); addLog('💬', `Nettes Gespräch mit ${n.name}.`, 'good'); }
+    if(action==='hang'){
+      if(player.money<20){ addLog('💸','Nicht genug Geld.','bad'); return; }
+      addMoney(-20); n.relationship=clamp(n.relationship+rnd(5,10)); addStat('happiness',2);
+      addLog('🎯', `Du verbringst Zeit mit ${n.name}.`, 'good');
+    }
+    if(action==='gift'){
+      if(player.money<80){ addLog('💸','Nicht genug Geld.','bad'); return; }
+      addMoney(-80); n.relationship=clamp(n.relationship+rnd(6,12)); addLog('🎁', `Du schenkst ${n.name} etwas.`, 'good');
+    }
+    if(action==='fight'){ n.relationship=clamp(n.relationship-rnd(8,16)); addLog('💢', `Du streitest mit ${n.name}.`, 'bad'); }
+    if(action==='advice'){
+      addStat('smarts', rnd(1,3)); n.relationship=clamp(n.relationship+rnd(2,5));
+      addLog('🧠', `${n.name} gibt dir einen guten Rat.`, 'good');
+    }
+    if(action==='askmoney'){
+      const chance = n.relationship/150;
+      if(Math.random()<chance){
+        const g=rnd(30,rnd(80,250)); addMoney(g); n.relationship=clamp(n.relationship-3);
+        addLog('💶', `${n.name} leiht dir ${fmtMoney(g)}.`, 'good');
+      } else {
+        n.relationship=clamp(n.relationship-6);
+        addLog('🙅', `${n.name} lehnt ab.`, 'bad');
+      }
+    }
+    if(action==='date'){
+      if(player.money<80){ addLog('💸','Nicht genug Geld für ein Date.','bad'); return; }
+      addMoney(-80); player.datingId=n.id; n.relationship=clamp(n.relationship+rnd(5,12)); addStat('happiness',3);
+      addLog('💘', `Du triffst dich mit ${n.name} zu einem Date.`, 'good');
+    }
+    if(action==='propose'){
+      const chance = Math.min(0.95, n.relationship/100 + 0.1);
+      if(Math.random()<chance){
+        n.isSpouse=true; player.datingId=null;
+        addLog('💍', `${n.name} sagt Ja! Ihr heiratet.`, 'good'); addStat('happiness',12);
+      } else {
+        n.relationship=clamp(n.relationship-10);
+        addLog('😔', `${n.name} lehnt deinen Antrag ab — noch ist die Zeit nicht reif.`, 'bad');
+      }
+    }
+    if(action==='divorce'){ doDivorce(n); addLog('📝', `Du reichst die Scheidung von ${n.name} ein.`, 'bad'); }
+    renderHeader(); renderRelationships();
+  }
+
+  /* ================= BERUF ================= */
+  let jobTab='gelegenheit';
+  document.querySelectorAll('#job-tabs .sub-tab').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#job-tabs .sub-tab').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); jobTab=b.dataset.t; renderJobs();
+    });
+  });
+  const workHub = [
+    { id:'bildung', icon:'🎓', title:'Bildung', desc:'Schule, Ausbildung, Studium' },
+    { id:'gelegenheit', icon:'🧹', title:'Gelegenheitsjobs', desc:'Kleine Jobs ohne Vorerfahrung' },
+    { id:'teilzeit', icon:'⏰', title:'Teilzeitjobs', desc:'Ab 16 Jahren' },
+    { id:'jobs', icon:'💼', title:'Feste Jobs', desc:'Karrierejobs, teils mit Ausbildung/Studium' },
+    { id:'militaer', icon:'🎖️', title:'Militär', desc:'Dienst mit Rangaufstieg' },
+    { id:'karriere', icon:'⭐', title:'Sonderkarriere', desc:'Musik, Schauspiel, Sport, Influencer' },
+    { id:'selbststaendig', icon:'🏢', title:'Selbstständigkeit', desc:'Eigene Firma gründen und ausbauen' },
+  ];
+  let workTab=null;
+  document.getElementById('work-back').addEventListener('click', ()=>{ workTab=null; renderWork(); });
+  function openWorkTab(id){ workTab=id; renderWork(); }
+  function renderWork(){
+    document.getElementById('work-status').textContent = jobLabel();
+    const backBtn=document.getElementById('work-back');
+    const titleEl=document.getElementById('work-title');
+    const wrap=document.getElementById('work-content'); wrap.innerHTML='';
+
+    if(workTab===null){
+      backBtn.style.display='none';
+      titleEl.textContent='Bildung & Beruf';
+      workHub.forEach(h=>{
+        const card=document.createElement('div'); card.className='card'; card.style.cursor='pointer';
+        card.innerHTML=`<div class="card-top"><div class="card-icon">${h.icon}</div><div><div class="card-name">${h.title}</div><div class="card-sub">${h.desc}</div></div></div>`;
+        card.addEventListener('click', ()=> openWorkTab(h.id));
+        wrap.appendChild(card);
+      });
+      return;
+    }
+    backBtn.style.display='block';
+    titleEl.textContent = workHub.find(h=>h.id===workTab).title;
+
+    if(workTab==='bildung'){ renderEducationDetail(wrap); return; }
+    if(workTab==='militaer'){ renderMilitaryDetail(wrap); return; }
+    if(workTab==='karriere'){ renderKarriereDetail(wrap); return; }
+    if(workTab==='selbststaendig'){ renderSelbststaendigDetail(wrap); return; }
+    // gelegenheit / teilzeit / jobs
+    if(player.job){
+      const negoLeft = actionsLeft('negotiate',1);
+      const curCard=document.createElement('div'); curCard.className='card';
+      curCard.innerHTML=`<div class="card-top"><div class="card-icon">💼</div><div><div class="card-name">${player.job.title}</div><div class="card-sub">${player.job.special?'variables Einkommen':fmtMoney(player.job.salary)+' / Jahr'}</div></div></div>
+      <div class="card-actions">
+        ${player.job.special?'':'<button class="mini-btn gold" id="btn-negotiate" '+(negoLeft<1?'disabled':'')+'>💬 Gehalt verhandeln'+(negoLeft<1?' (dieses Jahr schon versucht)':'')+'</button>'}
+        <button class="mini-btn danger" id="btn-quit">Kündigen</button>
+      </div>`;
+      wrap.appendChild(curCard);
+      document.getElementById('btn-quit').addEventListener('click', ()=>{
+        player.jobsHeld.push(player.job.title); addLog('📤', `Du kündigst deinen Job als ${player.job.title}.`, '');
+        player.job=null; renderWork(); renderHeader();
+      });
+      const negoBtn = document.getElementById('btn-negotiate');
+      if(negoBtn) negoBtn.addEventListener('click', ()=>{
+        if(!useAction('negotiate',1)) return;
+        const chance = Math.min(0.85, 0.35 + player.stats.smarts/200 + player.stats.fame/300);
+        if(Math.random()<chance){
+          player.job.salary = Math.round(player.job.salary*rnd(108,125)/100);
+          addLog('💬', `Verhandlung erfolgreich! Neues Gehalt: ${fmtMoney(player.job.salary)}.`, 'good');
+        } else { addStat('happiness',-2); addLog('💬', 'Die Gehaltsverhandlung wird abgelehnt.', 'bad'); }
+        renderWork(); renderHeader();
+      });
+    }
+    function eduMeets(job){
+      if(job.edu==='none') return true;
+      if(job.edu==='realschule') return !!player.education.abschluss;
+      if(job.edu==='ausbildung') return player.education.ausbildung===job.title || !!player.education.ausbildung;
+      if(job.edu==='studium') return job.degree ? player.education.degree===job.degree : !!player.education.degree;
+      return true;
+    }
+    function apply(j){
+      const chance=Math.min(0.92,Math.max(0.15,0.5+(player.stats.smarts-j.minSmarts)/100));
+      if(Math.random()<chance){
+        if(player.job) player.jobsHeld.push(player.job.title);
+        player.job={title:j.title, salary:j.salary};
+        addLog('🎉', `Du wurdest als ${j.title} eingestellt!`, 'good'); addStat('happiness',5);
+      } else { addLog('❌', `Bewerbung als ${j.title} abgelehnt.`, 'bad'); }
+      renderWork(); renderHeader();
+    }
+    function jobCard(j){
+      const meetsAge = player.age>=j.minAge;
+      const meetsSmarts = player.stats.smarts>=j.minSmarts;
+      const meetsEdu = eduMeets(j);
+      const ok = meetsAge && meetsSmarts && meetsEdu;
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="card-top"><div class="card-icon">💼</div><div><div class="card-name">${j.title}</div><div class="card-sub">${fmtMoney(j.salary)}/Jahr · ab ${j.minAge} · Intelligenz ${j.minSmarts}${j.edu!=='none'?' · '+j.edu:''}</div></div></div>
+      <div class="card-actions"><button class="mini-btn" ${ok?'':'disabled'}>Bewerben</button></div>`;
+      card.querySelector('button').addEventListener('click', ()=> apply(j));
+      wrap.appendChild(card);
+    }
+    const list = workTab==='gelegenheit' ? jobsGelegenheit : workTab==='teilzeit' ? jobsTeilzeit : jobsFest;
+    const avail = list.filter(j=>player.age>=j.minAge);
+    if(avail.length===0){ const h=document.createElement('div'); h.className='empty-hint'; h.textContent='Noch keine passenden Stellen in diesem Alter.'; wrap.appendChild(h); }
+    avail.forEach(jobCard);
+  }
+  function renderEducationDetail(wrap){
+    const e=player.education;
+    if(e.training){ wrap.innerHTML=`<div class="empty-hint">Noch ${e.yearsLeft} Jahr(e) bis zum Abschluss in ${e.trainingName}.</div>`; return; }
+    if(player.age<16){ wrap.innerHTML=`<div class="empty-hint">Ausbildung/Studium sind ab 16 Jahren möglich.</div>`; return; }
+    const label1=document.createElement('div'); label1.className='field-label'; label1.textContent='Ausbildung (ab 16)'; wrap.appendChild(label1);
+    ausbildungList.forEach(d=>{
+      const meets=player.stats.smarts>=d.smartsReq;
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="card-top"><div class="card-icon">🔧</div><div><div class="card-name">${d.name}</div><div class="card-sub">${d.years} Jahre · Intelligenz ${d.smartsReq}</div></div></div>
+      <div class="card-actions"><button class="mini-btn" ${meets?'':'disabled'}>Beginnen</button></div>`;
+      card.querySelector('button').addEventListener('click', ()=>{
+        e.training=true; e.trainingType='ausbildung'; e.trainingName=d.name; e.yearsLeft=d.years;
+        addLog('🔧', `Du beginnst deine Ausbildung als ${d.name}.`, 'good'); renderWork(); renderHeader();
+      });
+      wrap.appendChild(card);
+    });
+    if(player.age>=18){
+      const label2=document.createElement('div'); label2.className='field-label'; label2.textContent='Studiengänge (ab 18)'; wrap.appendChild(label2);
+      degrees.forEach(d=>{
+        const meets=player.stats.smarts>=d.smartsReq;
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML=`<div class="card-top"><div class="card-icon">🎓</div><div><div class="card-name">${d.name}</div><div class="card-sub">${d.years} Jahre · Intelligenz ${d.smartsReq} · ${fmtMoney(d.tuition)}/Jahr</div></div></div>
+        <div class="card-actions"><button class="mini-btn" ${meets?'':'disabled'}>Einschreiben</button></div>`;
+        card.querySelector('button').addEventListener('click', ()=>{
+          if(player.money<d.tuition){ addLog('💸','Nicht genug Geld für die Einschreibung.','bad'); return; }
+          addMoney(-d.tuition); e.training=true; e.trainingType='studium'; e.trainingName=d.name; e.yearsLeft=d.years;
+          addLog('🎓', `Du beginnst dein Studium in ${d.name}.`, 'good'); renderWork(); renderHeader();
+        });
+        wrap.appendChild(card);
+      });
+    }
+  }
+  function renderMilitaryDetail(wrap){
+    if(player.military.active){
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="card-top"><div class="card-icon">🎖️</div><div><div class="card-name">${militaryRanks[player.military.rank].title}</div><div class="card-sub">Militärdienst</div></div></div>
+      <div class="card-actions"><button class="mini-btn danger" style="width:100%;">Austreten</button></div>`;
+      card.querySelector('button').addEventListener('click', ()=>{ player.military.active=false; addLog('📤','Du verlässt das Militär.',''); renderWork(); renderHeader(); });
+      wrap.appendChild(card); return;
+    }
+    if(player.age<18){ wrap.innerHTML='<div class="empty-hint">Militärdienst ab 18 Jahren.</div>'; return; }
+    if(player.job){ wrap.innerHTML='<div class="empty-hint">Du bist bereits beschäftigt. Kündige zuerst deinen Job.</div>'; return; }
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="card-top"><div class="card-icon">🎖️</div><div><div class="card-name">Militärdienst</div><div class="card-sub">Start als Rekrut · ${fmtMoney(militaryRanks[0].salary)}/Jahr</div></div></div>
+    <div class="card-actions"><button class="mini-btn">Beitreten</button></div>`;
+    card.querySelector('button').addEventListener('click', ()=>{
+      player.military={active:true, rank:0, years:0};
+      addLog('🎖️','Du trittst dem Militär bei.','good'); renderWork(); renderHeader();
+    });
+    wrap.appendChild(card);
+  }
+  function renderKarriereDetail(wrap){
+    const unlockedAny = Object.values(player.careerUnlocks).some(v=>v);
+    if(!unlockedAny){ wrap.innerHTML='<div class="empty-hint">Noch keine Sonderkarriere freigeschaltet. Besondere Ereignisse im Leben können das ändern.</div>'; return; }
+    specialCareers.forEach(sc=>{
+      if(!player.careerUnlocks[sc.id]) return;
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="card-top"><div class="card-icon">⭐</div><div><div class="card-name">${sc.title}</div><div class="card-sub">Variables Einkommen · steigert Ruhm</div></div></div>
+      <div class="card-actions"><button class="mini-btn purple" style="width:100%;">🎤 Vorsprechen</button></div>`;
+      card.querySelector('button').addEventListener('click', ()=>{
+        const chance = 0.3 + player.stats.fame/200 + player.stats.looks/300;
+        if(Math.random()<chance){
+          if(player.job) player.jobsHeld.push(player.job.title);
+          player.job = { title:sc.title, salary:0, special:sc.id };
+          addLog('🌟', `Durchbruch! Du wirst ${sc.title}.`, 'good'); addStat('happiness',8);
+        } else { addLog('❌', `Das Vorsprechen für ${sc.title} klappt noch nicht.`, 'bad'); }
+        renderWork(); renderHeader();
+      });
+      wrap.appendChild(card);
+    });
+  }
+  function renderSelbststaendigDetail(wrap){
+    if(player.age<18){ wrap.innerHTML='<div class="empty-hint">Selbstständigkeit ab 18 Jahren möglich.</div>'; return; }
+    if(player.business){
+      const b=player.business;
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="card-top"><div class="card-icon">🏢</div><div><div class="card-name">Deine Firma</div><div class="card-sub">Stufe ${b.level} · schwankendes Einkommen</div></div></div>
+      <div class="card-actions">
+        <button class="mini-btn gold" id="btn-invest" ${player.money<b.level*5000?'disabled':''}>📈 Investieren (${fmtMoney(b.level*5000)})</button>
+        <button class="mini-btn danger" id="btn-close-biz">Firma schließen</button>
+      </div>`;
+      wrap.appendChild(card);
+      document.getElementById('btn-invest').addEventListener('click', ()=>{
+        if(!pay(b.level*5000)) return;
+        b.level += 1; addLog('📈', `Du investierst in deine Firma — jetzt Stufe ${b.level}.`, 'good');
+        renderWork(); renderHeader();
+      });
+      document.getElementById('btn-close-biz').addEventListener('click', ()=>{
+        addMoney(Math.round(b.level*2000)); player.business=null;
+        addLog('🏢','Du schließt deine Firma und verkaufst, was übrig ist.', '');
+        renderWork(); renderHeader();
+      });
+      return;
+    }
+    if(player.job || player.military.active){ wrap.innerHTML='<div class="empty-hint">Du bist bereits beschäftigt. Kündige zuerst deinen Job.</div>'; return; }
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="card-top"><div class="card-icon">🏢</div><div><div class="card-name">Eigene Firma gründen</div><div class="card-sub">Kosten: 10.000 € · Einkommen schwankt mit dem Markt</div></div></div>
+    <div class="card-actions"><button class="mini-btn" style="width:100%;" ${player.money<10000?'disabled':''}>Gründen</button></div>`;
+    card.querySelector('button').addEventListener('click', ()=>{
+      if(!pay(10000)) return;
+      player.business={ level:1 };
+      addLog('🏢','Du gründest deine eigene Firma!', 'good');
+      renderWork(); renderHeader();
+    });
+    wrap.appendChild(card);
+  }
+
+  /* ================= AKTIVITÄTEN ================= */
+  const aktHub = [
+    { id:'gesundheit', icon:'🏋️', title:'Fitness & Gesundheit', desc:'Fitnessstudio, Arzt, Therapeut, Meditation' },
+    { id:'genuss', icon:'🍔', title:'Genuss', desc:'Fast Food, Bar, Spa, Werbedeals' },
+    { id:'geist', icon:'📖', title:'Geist', desc:'Bibliothek, Innehalten, Spenden' },
+    { id:'social', icon:'📱', title:'Social Media', desc:'TikTok, Instagram, YouTube, X, Twitch, Fanplattform' },
+    { id:'gluecksspiel', icon:'🎰', title:'Glücksspiel', desc:'Lotto und Casino' },
+    { id:'verbrechen', icon:'🚓', title:'Kriminalität', desc:'Von Taschendiebstahl bis Bankraub' },
+  ];
+  let aktTab=null;
+  document.getElementById('akt-back').addEventListener('click', ()=>{ aktTab=null; renderActivities(); });
+  function openAktTab(id){ aktTab=id; renderActivities(); }
+  function renderActivities(){
+    const backBtn=document.getElementById('akt-back');
+    const titleEl=document.getElementById('akt-title');
+    const wrap=document.getElementById('akt-content'); wrap.innerHTML='';
+
+    if(aktTab===null){
+      backBtn.style.display='none';
+      titleEl.textContent='Aktivitäten';
+      aktHub.forEach(h=>{
+        const card=document.createElement('div'); card.className='card'; card.style.cursor='pointer';
+        card.innerHTML=`<div class="card-top"><div class="card-icon">${h.icon}</div><div><div class="card-name">${h.title}</div><div class="card-sub">${h.desc}</div></div></div>`;
+        card.addEventListener('click', ()=> openAktTab(h.id));
+        wrap.appendChild(card);
+      });
+      return;
+    }
+    backBtn.style.display='block';
+    titleEl.textContent = aktHub.find(h=>h.id===aktTab).title;
+
+    if(aktTab==='gesundheit'){
+      addActionCard(wrap,'🏋️','Fitnessstudio','+Gesundheit, +Fitness · 30€', ()=>{ if(!pay(30))return; addStat('health',4); addStat('fitness',5); addLog('🏋️','Du warst im Fitnessstudio.','good'); }, 'fitness', 3);
+      addActionCard(wrap,'🩺','Arztbesuch','+Gesundheit · 60€', ()=>{ if(!pay(60))return; addStat('health',8); addLog('🩺','Du warst beim Arzt.','good'); }, 'arzt', 2);
+      addActionCard(wrap,'🛋️','Therapeut','+Lebensfreude · 70€', ()=>{ if(!pay(70))return; addStat('happiness',10); addLog('🛋️','Du warst bei einem Therapeuten.','good'); }, 'therapeut', 2);
+      addActionCard(wrap,'🧘','Meditation','+Lebensfreude, +Gesundheit · kostenlos', ()=>{ addStat('happiness',4); addStat('health',2); addLog('🧘','Du meditierst.','good'); }, 'meditation', 3);
+    }
+    if(aktTab==='genuss'){
+      addActionCard(wrap,'🍔','Fast Food','+Lebensfreude, -Gesundheit · 15€', ()=>{ if(!pay(15))return; addStat('happiness',5); addStat('health',-2); addLog('🍔','Leckeres Fast Food!','good'); }, 'fastfood', 3);
+      addActionCard(wrap,'🍹','Bar / Kneipe','+Lebensfreude · 40€', ()=>{ if(!pay(40))return; addStat('happiness',6); addStat('health',-1); addLog('🍹','Netter Abend in der Bar.','good'); }, 'bar', 2);
+      addActionCard(wrap,'💆','Spa-Tag','+Lebensfreude, +Aussehen · 90€', ()=>{ if(!pay(90))return; addStat('happiness',7); addStat('looks',4); addLog('💆','Entspannter Spa-Tag.','good'); }, 'spa', 2);
+      if(player.stats.fame>=50){
+        addActionCard(wrap,'🤝','Werbedeal abschließen','Einkommen abhängig vom Ruhm', ()=>{
+          const g=Math.round(player.stats.fame*rnd(80,200)); addMoney(g); addLog('🤝', `Werbedeal: +${fmtMoney(g)}`, 'good');
+        }, 'addeal', 1);
+      }
+    }
+    if(aktTab==='geist'){
+      addActionCard(wrap,'📖','Bibliothek','+Intelligenz · kostenlos', ()=>{ addStat('smarts',3); addLog('📖','Du liest ein spannendes Buch.','good'); }, 'bibliothek', 2);
+      addActionCard(wrap,'🙏','Innehalten','+Lebensfreude · kostenlos', ()=>{ addStat('happiness',3); addLog('🙏','Ein Moment der Ruhe.','good'); }, 'beten', 2);
+      addActionCard(wrap,'💝','Spenden (200€)','+Lebensfreude · -Geld', ()=>{ if(!pay(200))return; addStat('happiness',8); addLog('💝','Du spendest an eine Wohltätigkeitsorganisation.','good'); }, 'spenden', 1);
+    }
+    if(aktTab==='social'){
+      const totalCard=document.createElement('div'); totalCard.className='card';
+      totalCard.innerHTML=`<div class="card-name">Gesamtreichweite</div><div class="card-sub">${totalFollowers().toLocaleString('de-DE')} Follower über alle Plattformen</div>`;
+      wrap.appendChild(totalCard);
+      socialPlatforms.filter(p=>player.age>=p.minAge).forEach(p=>{
+        const label=document.createElement('div'); label.className='field-label';
+        label.textContent = `${p.icon} ${p.label} · ${(player.social.platforms[p.id]||0).toLocaleString('de-DE')} Follower`;
+        wrap.appendChild(label);
+        p.posts.forEach(post=>{
+          addActionCard(wrap, p.icon, post.label, post.desc, ()=> doSocialPost(p, post), 'post_'+p.id+'_'+post.label, 2);
+        });
+      });
+    }
+    if(aktTab==='gluecksspiel'){
+      addActionCard(wrap,'🎫','Lottoschein (10€)','Kleine Gewinnchance', ()=>{
+        if(!pay(10))return;
+        if(Math.random()<0.1){ const g=rnd(50,500); addMoney(g); addLog('🎫', `Kleingewinn im Lotto: +${fmtMoney(g)}`, 'good'); }
+        else addLog('🎫','Kein Glück im Lotto.','bad');
+      }, 'lotto', 1);
+      [50,200,1000].forEach(bet=>{
+        addActionCard(wrap,'🎰',`Casino: ${bet}€ setzen`,'45% Gewinnchance auf das Doppelte', ()=>{
+          if(!pay(bet))return;
+          if(Math.random()<0.45){ addMoney(bet*2); addLog('🎰', `Gewinn im Casino: ${fmtMoney(bet*2)}!`, 'good'); }
+          else addLog('🎰', `Verlust im Casino: ${fmtMoney(bet)}.`, 'bad');
+        }, 'casino', 2);
+      });
+    }
+    if(aktTab==='verbrechen'){
+      addActionCard(wrap,'🤏','Taschendiebstahl','70% Erfolg · Risiko: 1 Jahr Gefängnis', ()=>crimeAttempt(0.7,50,150,1,1), 'crime', 2);
+      addActionCard(wrap,'🏪','Ladendiebstahl','60% Erfolg · Risiko: 1–2 Jahre', ()=>crimeAttempt(0.6,100,400,1,2), 'crime', 2);
+      addActionCard(wrap,'🚗','Auto stehlen','Vorbereitung wählbar · Risiko: 2–3 Jahre', ()=>prepareCrime(0.5,800,3000,2,3), 'crime', 2);
+      addActionCard(wrap,'🏚️','Einbruch','Vorbereitung wählbar · Risiko: 2–4 Jahre', ()=>prepareCrime(0.45,1000,5000,2,4), 'crime', 2);
+      addActionCard(wrap,'💻','Hackerangriff','Erfolgschance abhängig von Intelligenz · Risiko: 3–6 Jahre', ()=>crimeAttempt(Math.min(0.75,0.2+player.stats.smarts/150),2000,15000,3,6), 'crime', 2);
+      addActionCard(wrap,'🧺','Geldwäsche','40% Erfolg · Risiko: 4–8 Jahre', ()=>crimeAttempt(0.4,5000,25000,4,8), 'crime', 2);
+      addActionCard(wrap,'🏦','Bankraub','Vorbereitung dringend empfohlen · Risiko: 5–10 Jahre', ()=>prepareCrime(0.25,10000,50000,5,10), 'crime', 2);
+    }
+  }
+  function prepareCrime(baseChance,minG,maxG,minP,maxP){
+    const ev = { icon:'🗺️', text:()=>'Wie bereitest du dich vor?', choices:[
+      { label:'Ohne Vorbereitung', result:'Du gehst spontan vor.', effects:{}, custom:()=>{ setTimeout(()=> crimeAttempt(baseChance,minG,maxG,minP,maxP), 50); } },
+      { label:'Fluchtwagen organisieren (-1.500€)', result:'Du hast einen Fluchtweg vorbereitet.', effects:{}, custom:()=>{
+          if(player.money<1500){ addLog('💸','Nicht genug Geld für die Vorbereitung — du gehst spontan vor.','bad'); setTimeout(()=> crimeAttempt(baseChance,minG,maxG,minP,maxP), 50); return; }
+          addMoney(-1500);
+          setTimeout(()=> crimeAttempt(Math.min(0.92,baseChance+0.08), minG,maxG, Math.max(1,Math.round(minP*0.85)), Math.max(1,Math.round(maxP*0.85))), 50);
+        }},
+      { label:'Insider-Infos besorgen (-4.000€)', result:'Du kennst jetzt Schwachstellen im Sicherheitssystem.', effects:{}, custom:()=>{
+          if(player.money<4000){ addLog('💸','Nicht genug Geld für Insider-Infos — du gehst spontan vor.','bad'); setTimeout(()=> crimeAttempt(baseChance,minG,maxG,minP,maxP), 50); return; }
+          addMoney(-4000);
+          setTimeout(()=> crimeAttempt(Math.min(0.92,baseChance+0.16), minG,maxG, Math.max(1,Math.round(minP*0.7)), Math.max(1,Math.round(maxP*0.7))), 50);
+        }},
+    ]};
+    showEventChoice(ev);
+  }
+  function doSocialPost(platform, post){
+    const looksF = post.looksWeighted ? (1+player.stats.looks/180) : 1;
+    const smartsF = post.smartsWeighted ? (1+player.stats.smarts/180) : 1;
+    const fameF = 1+player.stats.fame/220;
+    let gain = Math.round(rnd(post.base[0],post.base[1]) * looksF * smartsF * fameF);
+    player.social.platforms[platform.id] = (player.social.platforms[platform.id]||0) + gain;
+    addLog(platform.icon, `${post.label} auf ${platform.label}: +${gain} Follower.`, 'good');
+    if(Math.random()<post.viralChance){
+      const viral = gain*rnd(post.viralMult[0],post.viralMult[1]);
+      player.social.platforms[platform.id] += viral;
+      addStat('fame', rnd(1,3));
+      addLog('🔥', `Dein Beitrag auf ${platform.label} geht viral! +${viral} Follower.`, 'good');
+    }
+    if(post.hateRisk && Math.random()<post.hateRisk){
+      addStat('happiness', -rnd(4,10));
+      addLog('💢', `Hasskommentare unter deinem Beitrag auf ${platform.label} setzen dir zu.`, 'bad');
+    }
+    if(post.directIncome){
+      const income = Math.round((player.social.platforms[platform.id]||0) * rnd(2,5) / 100);
+      addMoney(income);
+      addLog('💰', `Einnahmen von deiner Fanplattform: +${fmtMoney(income)}.`, 'good');
+      if(post.happinessRisk && Math.random()<0.18){ addStat('happiness', -rnd(3,8)); addLog('😟','Der Content zehrt etwas an deinem Wohlbefinden.', 'bad'); }
+    }
+    addStat('fame', Math.min(2, Math.floor(totalFollowers()/6000)));
+  }
+  function crimeAttempt(chance,minG,maxG,minP,maxP){
+    if(Math.random()<chance){ const g=rnd(minG,maxG); addMoney(g); addLog('💰', `Verbrechen erfolgreich: +${fmtMoney(g)}`, 'good'); renderHeader(); renderActivities(); }
+    else { const yrs=rnd(minP,maxP); player._everJailed=true; showLawyerChoice(yrs); }
+  }
+  function showLawyerChoice(yrs){
+    const ev = { icon:'🚓', text:()=>'Du wurdest erwischt! Wie reagierst du?', choices:[
+      { label:'Anwalt beauftragen (-2.000€)', result:'Der Ausgang war ungewiss.', effects:{}, custom:()=>{
+        if(player.money>=2000){
+          addMoney(-2000);
+          if(Math.random()<0.5){ const reduced=Math.max(0,Math.floor(yrs*0.4)); player.prisonYearsLeft+=reduced; player.totalPrisonYears+=reduced; addLog('⚖️', `Der Anwalt erwirkt eine mildere Strafe: ${reduced} Jahre.`, 'good'); }
+          else { player.prisonYearsLeft+=yrs; player.totalPrisonYears+=yrs; addLog('⚖️','Der Anwalt kann nichts ausrichten. Volle Strafe.', 'bad'); }
+        } else { player.prisonYearsLeft+=yrs; player.totalPrisonYears+=yrs; addLog('💸','Kein Geld für einen Anwalt — volle Strafe.', 'bad'); }
+        addStat('happiness',-10);
+      }},
+      { label:'Keine Verteidigung', result:'Volle Strafe.', effects:{happiness:-15}, custom:()=>{ player.prisonYearsLeft+=yrs; player.totalPrisonYears+=yrs; }},
+    ]};
+    showEventChoice(ev);
+  }
+  function addActionCard(wrap,icon,name,sub,onClick,key,max){
+    const left = key ? actionsLeft(key,max) : 1;
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="card-top">
+      <div class="card-icon">${icon}</div>
+      <div style="flex:1; min-width:0;">
+        <div class="card-name">${name}</div>
+        <div class="card-sub">${sub}</div>
+      </div>
+      ${key?`<span class="limit-pill ${left<1?'used':''}">${Math.max(0,left)}/${max}</span>`:''}
+    </div>`;
+    const btn=document.createElement('button'); btn.className='mini-btn'; btn.style.width='100%'; btn.style.marginTop='9px'; btn.textContent = left<1 ? 'Dieses Jahr aufgebraucht' : 'Machen';
+    if(left<1) btn.disabled = true;
+    btn.addEventListener('click', ()=>{
+      if(key && !useAction(key,max)) return;
+      onClick(); renderHeader(); renderActivities();
+    });
+    card.appendChild(btn); wrap.appendChild(card);
+  }
+  function pay(amount){ if(player.money<amount){ addLog('💸','Nicht genug Geld.','bad'); return false; } addMoney(-amount); return true; }
+
+  /* ================= MARKT ================= */
+  let vermTab=null;
+  const marketHub = [
+    { id:'fahrzeuge', icon:'🚗', title:'Fahrzeuge', desc:'Autos vom Gebrauchtwagen bis zur Luxuslimousine' },
+    { id:'boote', icon:'⛵', title:'Boote', desc:'Vom Schlauchboot bis zur Yacht' },
+    { id:'flugzeuge', icon:'✈️', title:'Flugzeuge', desc:'Kleinflugzeuge und Privatjets' },
+    { id:'immobilien', icon:'🏠', title:'Immobilien', desc:'Wohnungen, Häuser, Villen, Anwesen' },
+    { id:'schmuck', icon:'💍', title:'Schmuck', desc:'Ketten, Ringe, Luxusuhren' },
+    { id:'luxus', icon:'🖼️', title:'Luxusgüter', desc:'Designerartikel, Kunst, Privatinseln' },
+    { id:'bank', icon:'🏦', title:'Bank', desc:'Sparkonto, Kredite, Aktien, Kryptowährung' },
+    { id:'haustiere', icon:'🐶', title:'Haustiere', desc:'Adoptieren und versorgen' },
+    { id:'besitz', icon:'📦', title:'Mein Besitz', desc:'Alles, was dir bereits gehört' },
+  ];
+  document.getElementById('verm-back').addEventListener('click', ()=>{ vermTab=null; renderMarket(); });
+  function openMarketTab(id){ vermTab=id; renderMarket(); }
+  function renderMarket(){
+    document.getElementById('verm-money').textContent = fmtMoney(player.money);
+    const backBtn = document.getElementById('verm-back');
+    const titleEl = document.getElementById('verm-title');
+    const wrap=document.getElementById('verm-content'); wrap.innerHTML='';
+
+    if(vermTab===null){
+      backBtn.style.display='none';
+      titleEl.textContent='Markt';
+      marketHub.forEach(h=>{
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML=`<div class="card-top"><div class="card-icon">${h.icon}</div><div><div class="card-name">${h.title}</div><div class="card-sub">${h.desc}</div></div></div>`;
+        card.style.cursor='pointer';
+        card.addEventListener('click', ()=> openMarketTab(h.id));
+        wrap.appendChild(card);
+      });
+      return;
+    }
+
+    backBtn.style.display='block';
+    titleEl.textContent = marketHub.find(h=>h.id===vermTab).title;
+
+    if(vermTab==='besitz'){
+      if(player.assets.length===0){ wrap.innerHTML='<div class="empty-hint">Noch keine Vermögenswerte.</div>'; return; }
+      player.assets.forEach((a,i)=>{
+        const isRealEstate = marketCats.immobilien.items.some(it=>it.name===a.name);
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML=`<div class="card-top"><div class="card-icon">${a.icon}</div><div><div class="card-name">${a.name}${a.rented?' <span class="tag-pill">Vermietet</span>':''}</div><div class="card-sub">${fmtMoney(a.price)}</div></div></div>
+        <div class="card-actions">
+          ${isRealEstate ? `<button class="mini-btn green" data-a="rent" style="min-width:100%;">${a.rented?'🏠 Vermietung beenden':'🏠 Vermieten (+4%/Jahr)'}</button>` : ''}
+          <button class="mini-btn danger" data-a="sell" style="min-width:100%;">Verkaufen (${fmtMoney(Math.round(a.price*0.7))})</button>
+        </div>`;
+        card.querySelectorAll('.mini-btn').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            if(btn.dataset.a==='sell'){ addMoney(Math.round(a.price*0.7)); player.assets.splice(i,1); addLog('💰', `Du verkaufst: ${a.name}.`, ''); }
+            if(btn.dataset.a==='rent'){ a.rented=!a.rented; addLog('🏠', a.rented?`Du vermietest ${a.name}.`:`Du beendest die Vermietung von ${a.name}.`, 'good'); }
+            renderHeader(); renderMarket();
+          });
+        });
+        wrap.appendChild(card);
+      });
+      return;
+    }
+    if(vermTab==='haustiere'){
+      const label1=document.createElement('div'); label1.className='field-label'; label1.textContent='Deine Haustiere'; wrap.appendChild(label1);
+      const alive=player.pets.filter(p=>p.alive);
+      if(alive.length===0){ const h=document.createElement('div'); h.className='empty-hint'; h.textContent='Noch keine Haustiere.'; wrap.appendChild(h); }
+      alive.forEach(p=>{
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML=`<div class="card-top"><div class="card-icon">${p.icon}</div><div><div class="card-name">${p.name}</div><div class="card-sub">${p.species}</div></div></div>
+        <div class="rel-bar"><div style="width:${p.happiness}%"></div></div>
+        <div class="card-actions"><button class="mini-btn" data-a="feed">🍖 Füttern (-15€)</button><button class="mini-btn green" data-a="play">🎾 Spielen</button><button class="mini-btn purple" data-a="train">🎓 Trainieren</button></div>`;
+        card.querySelectorAll('.mini-btn').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            if(btn.dataset.a==='feed'){ if(!pay(15))return; p.happiness=clamp(p.happiness+10); addLog('🍖', `Du fütterst ${p.name}.`, 'good'); }
+            if(btn.dataset.a==='play'){ p.happiness=clamp(p.happiness+8); addStat('happiness',2); addLog('🎾', `Du spielst mit ${p.name}.`, 'good'); }
+            if(btn.dataset.a==='train'){
+              if(!useAction('train_'+p.name,1)){ addLog('⏳','Dieses Jahr schon trainiert.',''); renderMarket(); return; }
+              if(Math.random()<0.6){ p.happiness=clamp(p.happiness+12); addLog('🎓', `${p.name} lernt einen neuen Trick!`, 'good'); }
+              else { addLog('🎓', `${p.name} zeigt heute wenig Interesse am Training.`, ''); }
+            }
+            renderHeader(); renderMarket();
+          });
+        });
+        wrap.appendChild(card);
+      });
+      const label2=document.createElement('div'); label2.className='field-label'; label2.textContent='Haustier adoptieren'; wrap.appendChild(label2);
+      petShop.forEach(sp=>{
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML=`<div class="card-top"><div class="card-icon">${sp.icon}</div><div><div class="card-name">${sp.name}</div><div class="card-sub">${fmtMoney(sp.price)}</div></div></div>
+        <div class="card-actions"><button class="mini-btn gold" style="width:100%;" ${player.money<sp.price?'disabled':''}>Adoptieren</button></div>`;
+        card.querySelector('button').addEventListener('click', ()=>{
+          addMoney(-sp.price);
+          player.pets.push({ name:sp.name+' Nr.'+(player.pets.length+1), species:sp.name, icon:sp.icon, happiness:rnd(60,90), alive:true });
+          addLog(sp.icon, `Du adoptierst: ${sp.name}.`, 'good'); addStat('happiness',6);
+          renderHeader(); renderMarket();
+        });
+        wrap.appendChild(card);
+      });
+      return;
+    }
+    if(vermTab==='bank'){ renderBank(wrap); return; }
+    const cat = marketCats[vermTab];
+    if(cat.license && !player.licenses[cat.license]){
+      const card=document.createElement('div'); card.className='card';
+      if(player.age < cat.licenseMinAge){
+        card.innerHTML=`<div class="empty-hint">Diese Führerscheinprüfung ist erst ab ${cat.licenseMinAge} Jahren möglich. Du bist ${player.age}.</div>`;
+      } else {
+        card.innerHTML=`<div class="empty-hint">Für diese Kategorie brauchst du zuerst den passenden Führerschein.</div>
+        <button class="mini-btn purple" style="width:100%;" id="btn-take-license">📋 Führerschein-Prüfung ablegen</button>`;
+      }
+      wrap.appendChild(card);
+      const takeBtn = document.getElementById('btn-take-license');
+      if(takeBtn) takeBtn.addEventListener('click', ()=> openLicenseQuiz(cat.license));
+      return;
+    }
+    cat.items.forEach(item=>{
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="card-top"><div class="card-icon">${item.icon}</div><div><div class="card-name">${item.name}</div><div class="card-sub">${fmtMoney(item.price)}</div></div></div>
+      <div class="card-actions"><button class="mini-btn gold" style="width:100%;" ${player.money<item.price?'disabled':''}>Kaufen</button></div>`;
+      card.querySelector('button').addEventListener('click', ()=>{
+        addMoney(-item.price); player.assets.push({...item}); sfx.buy();
+        addLog('🛍️', `Du kaufst: ${item.name}.`, 'good'); addStat('happiness',6);
+        renderHeader(); renderMarket();
+      });
+      wrap.appendChild(card);
+    });
+  }
+  function renderBank(wrap){
+    const stockPrice = 100 + (player.stocks.avgPrice? player.stocks.avgPrice-100:0);
+    wrap.innerHTML='';
+    const saveCard=document.createElement('div'); saveCard.className='card';
+    saveCard.innerHTML=`<div class="card-name">💰 Sparkonto</div><div class="card-sub">Guthaben: ${fmtMoney(player.savings)} · 3% Zinsen/Jahr</div>
+    <div class="card-actions">
+      <button class="mini-btn green" id="btn-deposit">Einzahlen (1.000€)</button>
+      <button class="mini-btn gold" id="btn-withdraw">Abheben (1.000€)</button>
+    </div>`;
+    wrap.appendChild(saveCard);
+    document.getElementById('btn-deposit').addEventListener('click', ()=>{ if(!pay(1000)) return; player.savings+=1000; renderHeader(); renderMarket(); });
+    document.getElementById('btn-withdraw').addEventListener('click', ()=>{ if(player.savings<1000){ addLog('💸','Nicht genug auf dem Sparkonto.','bad'); return; } player.savings-=1000; addMoney(1000); renderHeader(); renderMarket(); });
+
+    const loanCard=document.createElement('div'); loanCard.className='card';
+    if(player.loan){
+      loanCard.innerHTML=`<div class="card-name">💳 Laufender Kredit</div><div class="card-sub">Restschuld: ${fmtMoney(player.loan.yearlyPayment*player.loan.yearsLeft)} · noch ${player.loan.yearsLeft} Jahre · Rate ${fmtMoney(player.loan.yearlyPayment)}/Jahr</div>`;
+    } else {
+      loanCard.innerHTML=`<div class="card-name">💳 Kredit aufnehmen</div>
+      <div class="card-actions">
+        <button class="mini-btn" data-amt="5000">5.000€</button>
+        <button class="mini-btn" data-amt="20000">20.000€</button>
+        <button class="mini-btn" data-amt="100000">100.000€</button>
+      </div>`;
+      loanCard.querySelectorAll('.mini-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const amt=Number(btn.dataset.amt);
+          addMoney(amt);
+          player.loan={ amount:amt, yearsLeft:8, yearlyPayment:Math.round(amt*1.35/8) };
+          addLog('💳', `Du nimmst einen Kredit über ${fmtMoney(amt)} auf.`, '');
+          renderHeader(); renderMarket();
+        });
+      });
+    }
+    wrap.appendChild(loanCard);
+
+    const stockCard=document.createElement('div'); stockCard.className='card';
+    stockCard.innerHTML=`<div class="card-name">📈 Aktienmarkt</div><div class="card-sub">Du hältst ${player.stocks.shares} Anteile · aktueller Kurs ${fmtMoney(stockPrice)}</div>
+    <div class="card-actions">
+      <button class="mini-btn green" id="btn-buy-stock">Kaufen (${fmtMoney(stockPrice)})</button>
+      <button class="mini-btn danger" id="btn-sell-stock" ${player.stocks.shares<1?'disabled':''}>Verkaufen</button>
+    </div>`;
+    wrap.appendChild(stockCard);
+    document.getElementById('btn-buy-stock').addEventListener('click', ()=>{
+      if(!pay(stockPrice)) return;
+      player.stocks.avgPrice = player.stocks.shares<1 ? 100 : player.stocks.avgPrice;
+      player.stocks.shares += 1;
+      addLog('📈','Du kaufst eine Aktie.','good'); renderHeader(); renderMarket();
+    });
+    document.getElementById('btn-sell-stock').addEventListener('click', ()=>{
+      if(player.stocks.shares<1) return;
+      player.stocks.shares -= 1; addMoney(stockPrice);
+      addLog('📉', `Du verkaufst eine Aktie für ${fmtMoney(stockPrice)}.`, '');
+      renderHeader(); renderMarket();
+    });
+
+    const cryptoPrice = 200 + (player.crypto.avgPrice? player.crypto.avgPrice-200:0);
+    const cryptoCard=document.createElement('div'); cryptoCard.className='card';
+    cryptoCard.innerHTML=`<div class="card-name">🪙 Kryptowährung</div><div class="card-sub">Du hältst ${player.crypto.coins} Coins · aktueller Kurs ${fmtMoney(cryptoPrice)} (hohes Risiko)</div>
+    <div class="card-actions">
+      <button class="mini-btn green" id="btn-buy-crypto">Kaufen (${fmtMoney(cryptoPrice)})</button>
+      <button class="mini-btn danger" id="btn-sell-crypto" ${player.crypto.coins<1?'disabled':''}>Verkaufen</button>
+    </div>`;
+    wrap.appendChild(cryptoCard);
+    document.getElementById('btn-buy-crypto').addEventListener('click', ()=>{
+      if(!pay(cryptoPrice)) return;
+      player.crypto.avgPrice = player.crypto.coins<1 ? 200 : player.crypto.avgPrice;
+      player.crypto.coins += 1;
+      addLog('🪙','Du kaufst einen Krypto-Coin.','good'); renderHeader(); renderMarket();
+    });
+    document.getElementById('btn-sell-crypto').addEventListener('click', ()=>{
+      if(player.crypto.coins<1) return;
+      player.crypto.coins -= 1; addMoney(cryptoPrice);
+      addLog('🪙', `Du verkaufst einen Coin für ${fmtMoney(cryptoPrice)}.`, '');
+      renderHeader(); renderMarket();
+    });
+  }
+  function showMarketSheet(){
+    currentSheet='vermoegen';
+    document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sheet-vermoegen').classList.add('active');
+    document.getElementById('overlay').classList.add('open');
+    renderMarket();
+  }
+  function openLicenseQuiz(type){
+    const quiz = pick(licenseQuiz[type]);
+    document.getElementById('license-title').textContent = 'Führerschein-Prüfung';
+    const c = document.getElementById('license-content');
+    c.innerHTML = `<div class="card"><div class="card-name">${quiz.q}</div></div>`;
+    quiz.options.forEach((opt,idx)=>{
+      const b=document.createElement('button'); b.className='choice-btn'; b.style.marginBottom='8px'; b.style.width='100%'; b.textContent=opt;
+      b.addEventListener('click', ()=>{
+        if(idx===quiz.correct){ player.licenses[type]=true; addLog('📋', `Du bestehst die ${type}-Prüfung!`, 'good'); }
+        else addLog('📋','Die Prüfung ist leider nicht bestanden. Versuch es erneut.', 'bad');
+        showMarketSheet();
+      });
+      c.appendChild(b);
+    });
+    openSheet('license');
+  }
+  document.getElementById('license-back').addEventListener('click', showMarketSheet);
+
+  /* ================= EINSTELLUNGEN / CHEATS ================= */
+  document.getElementById('sound-toggle').addEventListener('click', ()=>{
+    audioSettings.on = !audioSettings.on;
+    document.getElementById('sound-toggle').classList.toggle('on', audioSettings.on);
+  });
+  document.getElementById('volume-slider').addEventListener('input', (e)=>{ audioSettings.volume = e.target.value/100; });
+  document.getElementById('dark-toggle').addEventListener('click', ()=>{
+    const on = document.body.classList.toggle('dark');
+    document.getElementById('dark-toggle').classList.toggle('on', on);
+  });
+
+  function fillCheatInputs(){
+    document.getElementById('ch-money').value = Math.round(player.money);
+    document.getElementById('ch-age').value = player.age;
+    document.getElementById('ch-health').value = player.stats.health;
+    document.getElementById('ch-happiness').value = player.stats.happiness;
+    document.getElementById('ch-smarts').value = player.stats.smarts;
+    document.getElementById('ch-looks').value = player.stats.looks;
+    document.getElementById('ch-fitness').value = player.stats.fitness;
+    document.getElementById('ch-fame').value = player.stats.fame;
+    document.getElementById('ch-royal-toggle').classList.toggle('on', forceRoyalNext);
+  }
+  document.getElementById('ch-apply').addEventListener('click', ()=>{
+    player.money = Number(document.getElementById('ch-money').value)||0;
+    player.age = Number(document.getElementById('ch-age').value)||0;
+    player.stats.health = clamp(Number(document.getElementById('ch-health').value)||0);
+    player.stats.happiness = clamp(Number(document.getElementById('ch-happiness').value)||0);
+    player.stats.smarts = clamp(Number(document.getElementById('ch-smarts').value)||0);
+    player.stats.looks = clamp(Number(document.getElementById('ch-looks').value)||0);
+    player.stats.fitness = clamp(Number(document.getElementById('ch-fitness').value)||0);
+    player.stats.fame = Math.max(0, Number(document.getElementById('ch-fame').value)||0);
+    addLog('🛠️','Cheat-Werte angewendet.','good');
+    renderHeader();
+  });
+  document.getElementById('ch-royal-toggle').addEventListener('click', ()=>{
+    forceRoyalNext = !forceRoyalNext;
+    document.getElementById('ch-royal-toggle').classList.toggle('on', forceRoyalNext);
+  });
+  document.getElementById('ch-fame-on').addEventListener('click', ()=>{ player.stats.fame=80; addLog('⭐','Du bist jetzt berühmt!','good'); renderHeader(); });
+  document.getElementById('ch-unlock-careers').addEventListener('click', ()=>{
+    Object.keys(player.careerUnlocks).forEach(k=> player.careerUnlocks[k]=true);
+    addLog('🎤','Alle Sonderkarrieren freigeschaltet.','good');
+  });
+  document.getElementById('ch-add-money').addEventListener('click', ()=>{ addMoney(100000); addLog('💰','+100.000 € erhalten.','good'); renderHeader(); });
+  document.getElementById('ch-random-event').addEventListener('click', ()=>{ closeSheet(); triggerRandomEvent(); });
+  document.getElementById('ch-skip-event').addEventListener('click', ()=>{ pendingEvent=null; closeSheet(); });
+
+  /* ================= INIT ================= */
+  loadMeta().then(()=> tryLoadSave());
+
+})();
+</script>
+</body>
+</html>
